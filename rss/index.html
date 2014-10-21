@@ -1,0 +1,1351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[[ ANIM >> formed ]]]></title><description><![CDATA[cg · tech · programming · himanish bhattacharya]]></description><link>http://localhost:2368/</link><generator>Ghost 0.5</generator><lastBuildDate>Tue, 21 Oct 2014 01:13:43 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Modular rigging tools now open source]]></title><description><![CDATA[<p>After a year of releasing the first version of MRT, I've made its full source available for everyone to use. I've been able to find some time aside from my work to make updates to it and prepare it for this purpose. I got a lot of emails from users wanting to take a look at the source code since they felt it was very similar to 3D Buzz's Blueprint modular rigging system. I actually watched the series from their website before releasing MRT, and when you see the source code, you'll notice that it works in an entirely different fashion. One of the major differences is that instead of writing individual blueprint modules in code to extend the modules available for use, you make a macro module as <em>module collections</em> in maya with hierarchical module parenting from the three base module types and save them for re-use. Also, if you have lots of (tons of) modules in the scene created by MRT, they're significantly faster to work with and navigate than the modules created with 3D Buzz's blueprint UI.</p>
+
+<p>Also, now that I've been using it for a while, there are lot of places for improvement. In my opinion, the system for naming of nodes/components can be improved and additional attributes for a control rig application can be implemented. For example, when applying an <em>Auto Spline Control</em>, it can specify the amount of mid controls in the UI.</p>
+
+<p>Feel free to improve it on your own and modify it any way you like.</p>
+
+<p><a href="http://www.creativecrash.com/maya/script/modular-rigging-tools-for-maya" target="blank"><strong>Download it now from creativecrash</strong></a></p>
+
+<p>Cheers (:</p>]]></description><link>http://localhost:2368/modular-rigging-tools-now-open-source-2/</link><guid isPermaLink="false">8cc22c41-a653-43a5-b815-81c9c743e4ab</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Sun, 05 Oct 2014 19:06:00 GMT</pubDate></item><item><title><![CDATA[Moving here...]]></title><description><![CDATA[<p>I decided to move away from my last domain, animformed.net, as I noticed some performance issues and had to undertake a lot of maintenance and upgrades from the domain / server provider (not to mention spams). I found that Ghoster blog platform is lot more faster and easy to work with and it's self-maintained (I'll still be making my own posts :)).</p>
+
+<p>I'm also transferring all the documentation and tutorials from the old domain to this space.</p>]]></description><link>http://localhost:2368/test-1-2/</link><guid isPermaLink="false">c4a75a02-bc18-44a1-af1c-bd9186ccca7c</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Wed, 10 Sep 2014 19:40:00 GMT</pubDate></item><item><title><![CDATA[Using Modular rigging tools for Maya]]></title><description><![CDATA[<p>In this section, we will rig a simple character from scratch using modular rigging tools. For this tutorial, I’ll try to explain how to use the tools at the same time, but for more details, you can see its documentation here. In a summary, here are the steps necessary to do for the process of rigging a character:</p>
+
+<ul>
+<li><a href="http://localhost:2368/#define_modules">Define and place the modules for all of character parts</a>
+<ul><li><a href="http://localhost:2368/#leg_modules">Legs</a></li>
+<li><a href="http://localhost:2368/#spine_modules">Spine</a></li>
+<li><a href="http://localhost:2368/#arm_modules">Arms</a></li>
+<li><a href="http://localhost:2368/#hand_modules">Hands</a></li>
+<li><a href="http://localhost:2368/#clavicle_modules">Clavicles</a></li>
+<li><a href="http://localhost:2368/#neck_head_modules">Neck / Head</a></li></ul></li>
+<li><a href="http://localhost:2368/#module_parenting">Set up module parenting</a>
+<ul><li><a href="http://localhost:2368/#parenting_foot_heel_leg">Foot, heel and leg modules</a></li>
+<li><a href="http://localhost:2368/#parenting_spine_leg">Spine and leg modules</a></li>
+<li><a href="http://localhost:2368/#parenting_arm_clav_spine_neck">Arm, clavicle, spine and head/neck modules</a></li>
+<li><a href="http://localhost:2368/#parenting_hand">Hand modules</a></li></ul></li>
+<li><a href="http://localhost:2368/#proxy_geo_mod">Modify the module proxy geometry (if applicable)</a></li>
+<li><a href="http://localhost:2368/#save_char_collection">Save a module collection for the entire character for reuse</a></li>
+<li><a href="http://localhost:2368/#create_character_templ">Create a character from all the defined modules to generate the final joints and then save a template</a></li>
+<li><a href="http://localhost:2368/#bind_char_geo">Bind the character geometry to the skin joints</a></li>
+<li><a href="http://localhost:2368/#apply_control_rig">Apply control rigs to the character joint hierarchies</a><a name="define_modules"></a></li>
+<li>Animate !<a name="leg_modules"></a></li>
+</ul>
+
+<h3 id="defineandplacemodules">Define and place modules</h3>
+
+<h4 id="legmodules">Leg modules</h4>
+
+<p>We’ll start by creating the modules for the legs for a character. For doing this, first we have to select the type of module and specify options such as its start length and number of nodes (4). The type of a module which is to be created is related to the control rig which can be attached to manipulate the movement of a body part. Since we want an IK control for the legs, we will create a mirrored hinge module (5). A hinge module consists of three nodes in a hierarchy on a plane. A mirrored hinge module consists of two hinge modules ‘offsetted’ from the YZ plane (6). Therefore, we will keep the plane axis as Y (7) which is parallel to the module’s creation plane as YZ . This configuration will give us the local axes for the final leg joint, where X will be aim or twist axis and the hinge will rotate along Y axis. For this tutorial, we will enable proxy geometry (8) with only create bones (9) option enabled, since we want to create proxies along the length of the lower and upper legs and not on the joints. Mirror instancing (10) is enabled which will allow the proxy geometry of a module in a mirrored module to be a mirrored instance of the other. We will also keep the mirror rotation function for the final joint as ‘Behaviour’ (11) and the translation function as ‘World’ (12) , since for translation, we want both the leg IK translation controls to move in the same direction. One thing to be noted here is that with a mirrored module, we only need to adjust a module and its attributes on either side and the other will follow.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-I--2-1.jpg" width="730"></div>
+
+<p>We can also create mirrored modules for the both feet and the heels. It is necessary to create for the heel because the position of the module will generate the heel joint as a pivot required for movement of the foot.</p>
+
+<p>For constructing the modules for feet, we create a mirrored joint module with two nodes and an arbitrary length.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-I--5.jpg" width="510"></div>
+
+<p>For the both heels, we will create a mirrored joint module as well, but we’ll specify one node per joint module (13) and hence we only need elbow/joint proxy geometry (14).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-I--3.jpg" width="700"></div>
+
+<p>Translating one module in a mirrored module will move the other as well and thus one has to keep in mind that in order for mirrored module to work, the character model has to be symmetrical. Otherwise, you’d have to create the modules separately. We’ll now position the module at the base of the heel.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-I--7.jpg" width="600"></div>
+
+<div align="center">All the modules for the legs are finally positioned correctly.</div><br>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-I--8.jpg" width="540"><a name="spine_modules"></a></div>
+
+<hr>
+
+<h4 id="spinemodules">Spine modules</h4>
+
+<p>After building the modules for the legs, we’ll specify the settings to create a spline module. Here, we need five nodes (1) with a start length so they’re spaced appropriately. It will be created on an XY plane (2) with aim axis as X (3) and plane axis as Y (parallel to the XY plane) (4) with Z axis parallel to the world Z orientation. On a side note, you should always keep the aim or twist axis of a spine joint chain as +X if you’re using the advanced twist control with an IK spline solver in your own rigs, since it only works in that condition. Currently, none of the default control rigs for a spine hierarchy in modular rigging tools use spline IK. For my own reasons, I prefer not to use it. Moving on, we’ll also create proxy geometry for the spline module nodes (5) and this won’t be a mirrored version (6) of this module since we’re forming a single spine.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--1.jpg" width="730"></div>
+
+<p><em>Above</em> - <br><em>Left</em> - Settings for creating the spline module for spine as described. <br><em>Right</em> - The spline module. Notice the node orientation axes curves are oriented locally.</p>
+
+<p>The spline module has some useful attributes that we have to consider. If we select the main module transform for the spline module (the dark brown square control at the bottom, the lighter brown square at the top is the secondary module transform) and take at the channel box, a number of custom attributes are displayed (these are module attributes). From them, you’ll notice an attribute called “Node orientation type” which defines whether each node will have a local or world orientation. For a character spine, it is best to choose world orientation for spine joints since it’ll work better for twisting of the spine along with the character geometry. From the figure above on the right, you can clearly see that each node is oriented locally. We can now change the attribute to apply world orientation to each spline module node.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--4.jpg" width="700"></div>
+
+<p><em>Above</em> - <br><em>Left</em> - Modify the spline node orientation type. <br><em>Right</em> -  Notice the node orientation axes curves are now oriented to world. </p>
+
+<p>When you’re trying to adjust your spline module nodes to fit inside your geometry you might notice that some of the nodes might flip in orientation if they are oriented locally, which is undesirable. You will see it with the three colored axes representation for each node which shows its current orientation. If that happens, you simply have to select the colored axes representation control (you can’t transform it) which are flipped, and change the custom attribute in the channel box name “Tangent Up Vector” from “Original” to “Reversed”. Then its orientation will be correct.</p>
+
+<p>The spline module is now adjusted with correct orientation for its nodes and positioned correctly (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--5.jpg" width="700"><a name="arm_modules"></a></div>
+
+<hr>
+
+<h4 id="armmodules">Arm modules</h4>
+
+<p>Now, for the both lower and upper arms, we have to create a mirrored hinge module on the YZ plane (7), again with X as the aim axis (8) and Y as the plane axis (9) since we want the final elbow joint to rotate along the Y axis. For your own preference, you could keep Z as the plane axis as well. Also, we’ll specify proxy geometry (10) along the length of the module (bones) (11) and turn on mirror instancing (12). The mirrored module is built with “World” and “Behaviour” (13) for its translation and rotation function settings, which are needed for generating the final joints.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--6.jpg" width="700"></div>
+
+<p><br>The arm mirrored module is scaled and its nodes are translated with reference to the character geometry.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--8.jpg" width="700"></div>
+
+<p><br>The hinge mirrored module for the arms with reference to the other modules. You can see that the local bending axis for the elbow (the Y axis represented by the green arrows) are opposite to one another. This will give the desired rotation for the final elbow joints on both arms and they will both revolve in a “mirrored” fashion.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--9.jpg" width="600"><a name="hand_modules"></a></div>
+
+<hr>
+
+<h4 id="handmodules">Hand modules</h4>
+
+<p>For the hands, we want to build a collection of mirrored joint modules. Here we have to consider which joints will deform the geometry when they are generated. Therefore, five separate mirrored joint modules for the fingers will be created. For a finger, the metacarpal, proximal and intermediate joints will influence the geometry (see below). The distal joint is merely a placeholder and won’t be considered. For the hand the two base carpal joints will allow deformation such as cupping for the palm of the hand.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--10.jpg" width="670"></div>
+
+<p><br>For the module creation options for the fingers with mirrored joint modules, we want three nodes (14) per module with a start length, created on the YZ plane (15) with an offset since our character model is symmetrical along the X axis. For the node axes, we can keep default values with X as aim, Y as up and Z as the plane axis (16). We also want to create proxy geometry (17) along the length of the fingers and on the joints, with mirror instancing enabled (18). We can also keep default values for mirror functions (19). For the two carpals, we will create two mirrored joint modules with a single node (20). All the other options will remain the same, except that there will be no bone option (21) for proxy geometry.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--11.jpg" width="700"></div>
+
+<p><br>The hand modules for one hand is manipulated and positioned in place. A tip for creating all the finger modules is to create a mirrored joint module and then duplicate it four times with a relative offset (see the <a href="http://animformed.github.io/modular-rigging-tools-documentation/">documentation</a> for module duplication under the "Edit" tab).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--13.jpg" width="700"><a name="clavicle_modules"></a></div>
+
+<hr>
+
+<h4 id="claviclemodules">Clavicle modules</h4>
+
+<p>After building the arm modules, we will place the clavicle modules to connect the arm to the spine. It will consist of a two-node (22) joint module, whose one end will rest on the shoulder (acronium process) and the other end will be close to the chest (sternum) (see below right). The module creation options will be default with no proxy geometry (23) , except that it will be mirrored on YZ plane (24) with an offset.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--14.jpg" width="700"></div>
+
+<p><br>The mirrored module for the clavicles is placed.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--16.jpg" width="700"><a name="neck_head_modules"></a></div>
+
+<hr>
+
+<h4 id="neckheadmodules">Neck / Head modules</h4>
+
+<p>For the neck and head modules, you can now place joint modules using similar technique. For the eyes, one can use a mirrored single node joint module.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-II--17.jpg" width="700"><a name="module_parenting"></a></div>
+
+<hr>
+
+<h3 id="moduleparentingrelationships">Module parenting / relationships</h3>
+
+<p>In this part, we will set up all the relationships between the character modules. A relationship or parenting between two modules is a way to define how the final joints generated from the modules will be connected or related. If you have two separate modules, but you want them to be a part of a single hierarchy, you need to set-up a hierarchical relationship. If you want two separate modules to generate joints which won’t have any DAG relationship but you still want to have a parent-child behaviour which can be toggled, you need to set-up a constrained relationship. But before setting up any relationships, you need to make sure that all the modules are named correctly (You can rename after setting up relationships). If you take a look at the scene module list (1) in the modular rigging tools window under the edit tab, you can see that many of the modules have default/appended names (2) and they do not have any order or hierarchy (3).</p>
+
+<p><em>Below</em> - You can now see that the modules have been renamed. The type of the module is indicated within parentheses next to their names.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--1.jpg" width="700"></div>
+
+<p><br>To set-up a relation or parenting between two modules, you have to insert the child module and a node from the parent module. A parenting relationship will be made from the root joint of the child module to the node of the parent module. A child module can only have a single relationship but a node in a parent module can have any number of relationships. <a name="parenting_foot_heel_leg"></a>Here’s a list of module relationships/parenting that have to be set up between the character modules.</p>
+
+<p><strong><em>Foot, heel and leg modules</em></strong>
+<br>The foot, heel and the leg modules will have hierarchical relationships (and not DG connections) since we want the entire leg hierarchy to work with a reverse IK control rig if needed. First, we select any part of “l_foot” module (4) and insert the selection into the “child module” field under module parenting (5).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--4.jpg" width="700"></div>
+
+<p><br>If we look at the “l_leg” module you will notice that its current node hierarchy is reversed, indicated by the red arrows (for X aim axis) (6). To reverse the node hierarchy in a hinge module, select it, open the Modular rigging tools window and then go to Misc -> Swap hinge node start and end handle positions. If you have a mirrored hinge module, reversing the node hierarchy in a module will reverse the hierarchy on its mirror as well (7).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--6.jpg" width="700"></div>
+
+<p><br>Now, you have to select the end node for the leg hinge module (8) and insert it into the “parent module node” field (9) under module parenting. Then select the “Hierarchical” parent type (10) and press “Parent”.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--7.jpg" width="700"></div>
+
+<p><br>We can now see that a relationship has been set-up between the foot module and the end node of the leg module. A hierarchical relationship is indicated by a “white” arrow (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--10.jpg" width="650"></div>
+
+<p><br>Similarly, set-up a hierarchical relationship between the heel module (which is the child) and the end node for the “l_leg” module (parent module) (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--11.jpg" width="700"></div>
+
+<div align="center"><br>Now follow the same procedure to create the parenting relationships for the right leg hierarchy.</div><br>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--13.jpg" width="700"><a name="parenting_spine_leg"></a></div>
+
+<p><br><br><strong><em>Spine and leg modules</em></strong> <br>
+We will follow the same approach with parenting as before. The root node of the spine (spline module) will be the parent, with the leg hinge modules as the children. The parenting relationship will be “constrained” (represented by a black arrow) (below left), since we want the option for toggling the parent connection from the root of the spine. One can detach the leg hierarchy from the movement of spine joints. In the scene module list, you’ll now see that you have parenting relationship between the spine and leg modules (right below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--12.jpg" width="700"><a name="parenting_arm_clav_spine_neck"></a></div>
+
+<p><br><br><strong><em>Arm, clavicle, spine and head/neck modules</em></strong> <br>
+In the figure below, you can see that the root node (representing the shoulder joint) of the arm modules are connected to the end node of their corresponding clavicle modules by a constrained relationship (11). You can also identify the parenting connections among the modules representing by “black arrows”, meaning it’s a constrained relationship. The rule of thumb here is that a hierarchical parenting or a relationship should only be used when needed, if you need two or more modules to be a part of a joint hierarchy. The root nodes of the clavicles in the mirrored joint node is connected to the spine node (second to last) (12), and the neck/head module (joint module) is connected to the end node of the spine (13).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--15.jpg" width="700"><a name="parenting_hand"></a></div>
+
+<p><br><br><strong><em>Hand modules</em></strong> <br>
+For the hand collectively, the finger modules (children) will be connected to the carpal joints (parent) by constrained relationship. The index and the middle finger modules (14) are connected to the single node of the first carpal module (15). The ring and the pinky finger modules (16) are connected to the single node of the second carpal module (17). The thumb module (18) at last, is connected to the first carpal module. Both the carpal modules are connected to the end node (19) of the arm hinge module, which represents the wrist. This procedure is repeated for the other hand.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--16.jpg" width="700"></div>
+
+<p><br>Finally, for remaining eye and the tongue modules, they’ll connected to the head joint module nodes. You can consider both the parent head module nodes as the upper and lower jaw joints, so if the upper jaw is rotated, the eye joints will be transformed as well.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--17.jpg" width="570"></div>
+
+<p><br>All the scene modules are now related by parenting. You can see in the scene module list that the spine module is at the top of the parenting hierarchy.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-III--18.jpg" width="415"><a name="proxy_geo_mod"></a></div>
+
+<hr>
+
+<h3 id="modifyingmoduleproxygeometry">Modifying module proxy geometry</h3>
+
+<p>If created, the default proxy geometry for the scene modules may not be appropriate for the character reference that you may want to build. Therefore, you have to edit the default proxy geometry that gets generated along with the modules. By default, the proxy geometries for the scene modules are in “reference” mode, therefore they can’t be selected and edited. To turn off the “reference” mode for a specific proxy geometry on a module, browse the scene module list and turn off the reference switch (1) (cyan coloured button ‘R’). For an example, you could de-reference the spine proxy geometry and start modifying it. The absence of proxy visibility (P) and reference (R) button in the list shows that a module has no proxy geometry for it.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--1.jpg" width="700"></div>
+
+<p><br>As you’re modifying a proxy geometry for a module, I’d advise that only apply transformations at the component level on the shape node, and not on the transform. You can also use deformers to modify the proxy geometry and then delete the history on it.</p>
+
+<p><em>Below</em> - You can see now that the proxy geometry for the end node of the spine module has been modified.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--2.jpg" width="700"></div><br>
+
+<div align="center">Thus, we can work with the proxy geometry for the rest of the spine module.</div><br>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--7.jpg" width="600" hspace="40"></div>
+
+<p><br>There might a case where you may want to delete a proxy geometry on a module when its not needed. For our current character, we want to build a proxy geometry for a head from a single shape node (polygon mesh). In our head module, we have three proxy geometry shapes on its nodes. If you want to delete a proxy geometry on a module, select the geometry in the viewport, and then go to Modular rigging tools window -> Misc -> Delete selected proxy geometry. Do not directly delete the geometry (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--6.jpg" width="700"></div><br>
+
+<div align="center">Now, modify the head proxy to fit the reference character geometry.</div><br>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--9.jpg" width="510"></div><br>
+
+If you had used the “mirror instancing” option to create a mirrored module with proxy geometry, you only have to modify the geometry on either side. For example, on the mirrored hinge module for the arms, you can see that modifying the proxy for the upper arm on the left side modifies the proxy on the right side as well (see below).
+
+<div align="center"><br><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--10.jpg" width="700"></div>
+
+<p><br>For editing the hand proxy geometry and for my own preference, I deleted some of proxy geometry on the knuckles as indicated (see below left), and modified the rest to match the reference (below right).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--11.jpg" width="700"></div>
+
+<p><br>For the feet and heel modules, you can modify the existing proxy geometry to fit the shoe reference geometry as shown below.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--12.jpg" width="700"></div>
+
+<p><br>Now, we can work with the other character modules. We finish with modifying all the proxy geometries as shown below.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--15-1.jpg" width="700"></div>
+
+<p><div align="center"><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-IV--17.jpg" width="650"></div><a name="save_char_collection"></a> </p>
+
+<hr>
+
+<h3 id="savemodulecollectionfortheentirecharacter">Save module collection for the entire character</h3>
+
+<p>Use the menu option <code>Save all modules as a collection</code> under <code>File</code> in the UI. For more information, see the <a href="http://animformed.github.io/modular-rigging-tools-documentation/#menu_file_options">menu bar options</a> in the documentation.<a name="create_character_templ"></a> </p>
+
+<hr>
+
+<h3 id="createacharacterfromscenemodulesandsavetemplate">Create a character from scene modules and save template</h3>
+
+<p>Use the button <code>Create character from scene modules</code> under the <code>Rig</code> tab in the UI. For more information, see the <a href="http://animformed.github.io/modular-rigging-tools-documentation/#rig_character_creation">character creation</a> in the documentation.</p>
+
+<p>After creating a character, save a template for re-use. See the <a href="http://animformed.github.io/modular-rigging-tools-documentation/#save_char_templ">documentation</a>.<a name="bind_char_geo"></a></p>
+
+<hr>
+
+<h3 id="bindcharactergeometrytoskinjoints">Bind character geometry to skin joints</h3>
+
+<p>After creation a character, use the joints under the set <code>MRT_&lt;characterName&gt;_skinJointSet</code> to bind the character geometry. You may wish to use all or limited number number of joints from the set. See the <a href="http://animformed.github.io/modular-rigging-tools-documentation/#scene_hierarchy">scene hierarchy</a> in the documentation.<a name="apply_control_rig"></a></p>
+
+<hr>
+
+<h3 id="applycontrolrigstothecharacterjointhierarchies">Apply control rigs to the character joint hierarchies</h3>
+
+<p>To apply control rigging to character joints, <a href="http://animformed.github.io/control-rigging-with-modular-rigging-tools-for-maya/">see</a> the control rigging for MRT.</p>]]></description><link>http://localhost:2368/using-modular-rigging-tools-for-maya-2/</link><guid isPermaLink="false">37856eff-0c23-4917-be64-df2942433ee3</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Sat, 06 Sep 2014 01:59:00 GMT</pubDate></item><item><title><![CDATA[Modular Rigging Tools for Maya v1.0 – Public release]]></title><description><![CDATA[<p>It’s finally here. The first release of Modular Rigging Tools for Maya is available for download. When I wrote the first draft of MRT, I didn’t intend to make it public. I wrote it for personal use to rig characters using tools that worked the way I wanted without going into lot of details about getting it done out of the box using Maya. At that time, the draft version of MRT was rudimentary; it required knowing how it worked at the source level, and it also meant that it didn’t account for most of error handling which it does now. Over time, I changed and got rid of unnecessary features and added new functionality, until I realized it needed to be more organized. I re-wrote a lot of the code to keep it up with correct naming conventions, which was necessary for MRT to classify and correctly identify scene objects that it generated and handled. I also organized most of the UI elements to keep it simpler. While working my way for a public release, I had to come up with a better solution for making the control rigging framework within MRT, which was entirely re-written. This was done so that it be extended by a user if needed, without modifying the original source code. This wasn’t possible with the draft version of MRT, where you had to add /modify methods in the existing source and the control class types were entirely segregated. This was more like an ad-hoc implementation and made things a little messy.</p>
+
+<p>Anyway, I’ve tried my best to make it work as easy for everyone. It’s not perfect, and there still might be errors that I’ve overlooked; so keep them coming. If anyone’s reading this and if you’re using MRT, please comment. As always, I’ll try to improve upon and add new features to it during my time. Please view the documentation and tutorial for using Modular Rigging Tools.</p>
+
+<p>To download, see the Resources page.</p>]]></description><link>http://localhost:2368/modular-rigging-tools-for-maya-v1-0-public-release-2/</link><guid isPermaLink="false">11f278f4-ee69-465d-83b2-effdef6879c6</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Sat, 30 Mar 2013 01:36:00 GMT</pubDate></item><item><title><![CDATA[Extending Modular rigging tools by writing custom control classes]]></title><description><![CDATA[<p>Modular rigging tools has a set of built in control rig methods that you can use for rigging joint hierarchies in a character. However, you may need a functionality to apply with a control rig method that is unavailable with existing methods. In that case, you can write a new custom control class with methods to suit your needs. To do this, examples are given here to get you started. Also, I’d prefer that you take a look at the file, <code>mrt_controlRig_src.py</code>, found under the MRT directory, which contains the source for all the built-in control classes and their definitions for Modular rigging tools. To begin, you have to get an idea about for which control type you want to extend the functionality. The built-in control rigging framework has the following class hierarchy. All built-in control classes are derived from <code>BaseJointControl</code>:</p>
+
+<table>  
+<thead>  
+<tr>  
+  <th>&lt;controlClass&gt;</th>
+  <th>List of control methods</th>
+</tr>  
+</thead>  
+<tbody>  
+<tr>  
+  <td>BaseJointControl</td>
+  <td>FK Control, FK Control Stretchy</td>
+</tr>  
+<tr>  
+  <td>JointControl</td>
+  <td>FK Control , FK Control Stretchy (both inherited from BaseJointControl)</td>
+</tr>  
+<tr>  
+  <td>SplineControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Auto Spline Control, Reverse Spine FK Control, Reverse Spine FK Control Stretchy</td>
+</tr>  
+<tr>  
+  <td>HingeControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), IK Control, IK Control Stretchy, IK Control Stretchy with Elbow Control</td>
+</tr>  
+<tr>  
+  <td>JointChainControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Dynamic FK Control, Dynamic FK Control Stretchy, Dynamic End IK Control,
+Dynamic End IK Control Stretchy</td>  
+</tr>  
+<tr>  
+  <td>CustomLegControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Reverse IK Leg Control, Reverse IK Leg Control Stretchy</td>
+</tr>  
+</tbody>  
+</table>
+
+<p>There are two broad cases for which you may want to write your own control classes:</p>
+
+<h4 id="case1">Case 1</h4>
+
+<p>If you want to create a control class with its own control rig methods for a new type of custom hierarchy (joint hierarchy created from multiple modules using hierarchical module parenting), you should derive the class from “BaseJointControl”. For example, suppose you want to create a control class for a custom eye joint hierarchy in a character head which has the following module configuration (see below). A pair of mirrored joint modules with single nodes for the left and the right eyes (1) which are related to a base joint module (2) by hierarchical module parenting (3). The base joint module has the end node of a neck module as a constrained module parent (4).</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-1.jpg" width="500"></p>
+
+<p>After creating a character from scene modules, all the three modules used to construct the eye are now converted to a single joint hierarchy. This custom joint hierarchy has a root joint with two single child joints for both the eyes. Now, you can begin to write a new control class which would recognize this hierarchy and apply control method(s) to it. Because of how the control rigging framework for MRT is built, only the methods from this class would be identified internally for applying controls to this joint hierarchy.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-3.jpg" width="500"></p>
+
+<p>The class layout may be written as follows :</p>
+
+<pre><code class="language-python">"""  
+controlClass_customEyeControl_example.py  
+To be saved under MRT/userControlClasses/  
+All the names for source files containing user defined control classes must have the prefix "controlClass_"  
+"""  
+# Import maya commands.
+import maya.cmds as cmds  
+# Import MRT base and utility functions.
+import mrt_functions as mfunc  
+# Import functions for creating objects.
+import mrt_objects as objects
+
+# You can also import addition standard library modules as desired.
+
+class CustomEyeControl(BaseJointControl): # You MUST provide a docstring for every control class.
+
+    """This is a custom hierarchy type which is constructed from a collection of (1) a pair of mirrored joint modules with single nodes for the left and the right eyes, which are related to a base joint module with single node by hierarchical module parenting as their parent."""
+
+    customHierarchy = '&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n'
+
+    def __init__(self, characterName, rootJoint):
+        BaseJointControl.__init__(self, characterName, rootJoint
+
+    def applyFK_Control(self): # Every control method must have the prefix 'apply'.
+        '''Overrides the derived method 'applyFK_Control' from 'BaseJointControl' class. It's been modified to hold custom attributes and additional controls.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyFK_Control_Stretchy(self):
+        '''Overrides the derived method 'applyFK_Control' from 'BaseJointControl' class. It's been modified to hold custom attributes and additional controls.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyDirect_Eye_Control(self):
+        '''Creates direct translation controls for adjusting the rotation of eye joints along an aim.'''
+        &lt; The rest of the definition goes here &gt;
+</code></pre>
+
+<p>As seen above, the <code>customHierarchy</code> class attribute stores a string value which is obtained from using the utility function, <code>returnHierarchyTreeListStringForCustomControlRigging</code> from <code>mrt_functions</code> module. This function returns a string value depicting the hierarchy tree list of all joints from the root joint of the custom joint hierarchy. This value is necessary for MRT to recognize that this class has controls for a custom joint hierarchy, and is also used to check and compare whether the selected joint hierarchy can be applied with the control methods defined in this class.</p>
+
+<p>Usage for <code>returnHierarchyTreeListStringForCustomControlRigging</code>:  </p>
+
+<pre><code class="language-python">&gt;&gt;&gt; import maya.cmds as cmds
+&gt;&gt;&gt; import mrt_functions as mfunc
+&gt;&gt;&gt; print mfunc.returnHierarchyTreeListStringForCustomControlRigging('MRT_characterDef__eyebase_root_node_transform', '', False)
+&gt;&gt;&gt; '&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n'
+</code></pre>
+
+<p>After the source file’s saved, re-start MRT. Now, select the eye joint hierarchy and look at the control rigging options for it. New methods will be listed as they have been defined in the source.</p>
+
+<p><em>Below</em> - Re-selecting the custom eye hierarchy shows the new control rigging options.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-4.jpg" width="500"></p>
+
+<p>The user defined method “Direct Eye Control” is displayed for the custom hierarchy and can be applied to it.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-5.jpg" width="440"></p>
+
+<p>In the script editor output, a message is printed which describes if a control class is found successfully for rigging the selected custom joint hierarchy.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-6.jpg" width="600"></p>
+
+<p>If no control class is found for the selected custom joint hierarchy, or in case of an error, the following message is printed. The ‘JointControl’ class is used here it contains the base control methods which can be applied to any joint hierarchy.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-7.jpg" width="800"></p>
+
+<hr>
+
+<h4 id="case2">Case 2</h4>
+
+<p>The next case for writing a control class would be if you want to add specific functionality to an existing control rig method or add a new method to an existing control class, you should derive the class from a child of “BaseJointControl” class (all levels of inheritance). There might be a requirement where a user defined method for built-in class “SplineControl” may have to be added, or one of its existing methods have to be overridden. The class layout is written as follows, by using the similar template as described above:</p>
+
+<pre><code class="language-python"># Continuing with the above template
+
+class SplineControlExtras(SplineControl):
+
+    """This class derives from 'SplineControl' to override existing method(s) and add new control methods(s)."""
+
+    def __init__(self, characterName, rootJoint):
+        SplineControl.__init__(self, characterName, rootJoint
+
+    def applyAuto_Spline_Control(self):
+        '''Overrides the derived method to contain updated functionality.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyRibbon_Spline_Control(self):
+        '''Alternative implementation of an IK spine control, without using a splineIK solver. It drives the spline joint hierarchy using a joint layer which is attached to a linear NURBS surface.'''
+        &lt; The rest of the definition goes here &gt;
+</code></pre>
+
+<p>Now save the source file for the updated control definitions. Re-start MRT and select a joint hierarchy created from spline module. You’ll notice that a new control rig method “Ribbon Spline Control” is now added. The method “Auto Spline Control” gets updated as well.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-8.jpg" width="440"></p>
+
+<p>The script editor output prints a message which confirms that the user defined class “SplineControlExtras” is now being used.</p>
+
+<p><img style="float: center" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-9.jpg" width="680"></p>
+
+<p>While writing user defined classes for any control types, the class definition which is the last in inheritance would be used.</p>
+
+<p>To get a list of control classes / definitions in use, click <code>Click to view available control rigs for character hierarchies</code> under the <code>Rig</code> tab for MRT.</p>]]></description><link>http://localhost:2368/extending-mrt-2/</link><guid isPermaLink="false">2f7be7d5-f5a8-4d64-9121-4c18e571392f</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Tue, 26 Mar 2013 01:51:00 GMT</pubDate></item><item><title><![CDATA[Modular Rigging Tools – Documentation]]></title><description><![CDATA[<p>Here’s a detailed text explaining all the features within Modular Rigging Tools for Maya. It describes the installation under supported operating systems, the user interface, and the modules for rigging characters.</p>
+
+<ul>
+<li><a href="http://localhost:2368/#installation">Section I - Installation</a>
+<ul><li><a href="http://localhost:2368/#install_win">Windows</a></li>
+<li><a href="http://localhost:2368/#install_linux">Linux</a></li>
+<li><a href="http://localhost:2368/#install_mac">Mac</a></li></ul></li>
+<li><a href="http://localhost:2368/#ui">Section II – The user interface</a>
+<ul><li><a href="http://localhost:2368/#ui_create">"Create" tab</a>
+<ul><li><a href="http://localhost:2368/#ui_mod_create">Module creation</a></li>
+<li><a href="http://localhost:2368/#ui_create_opt">Creation options</a></li>
+<li><a href="http://localhost:2368/#ui_node_compt">Node components</a></li>
+<li><a href="http://localhost:2368/#ui_proxy_geo">Proxy geometry</a></li>
+<li><a href="http://localhost:2368/#ui_mirror_func">Mirroring &amp; Transform Function</a></li>
+<li><a href="http://localhost:2368/#ui_mod_naming_clr">Module Naming / Handle Colour</a></li></ul></li>
+<li><a href="http://localhost:2368/#ui_edit">"Edit" tab</a>
+<ul><li><a href="http://localhost:2368/#ui_mod_coll">Module collections</a></li>
+<li><a href="http://localhost:2368/#ui_scene_mods">Scene modules</a></li>
+<li><a href="http://localhost:2368/#ui_mod_parenting">Module parenting</a></li></ul></li>
+<li><a href="http://localhost:2368/#ui_rig">"Rig" tab</a>
+<ul><li><a href="http://localhost:2368/#rig_character_creation">Character creation</a></li>
+<li><a href="http://localhost:2368/#ui_templ_ctrl_rig">Character templates and Control rigging</a>
+<ul><li><a href="http://localhost:2368/#ui_templ">Templates</a></li>
+<li><a href="http://localhost:2368/#ui_ctrl_rig">Control rigging</a></li></ul></li>
+<li><a href="http://localhost:2368/#ui_parent_switch">Parent switching</a></li></ul></li>
+<li><a href="http://localhost:2368/#menu_file_options">Menu bar options</a>
+<ul><li><a href="http://localhost:2368/#ui_menu_file">File</a></li>
+<li><a href="http://localhost:2368/#ui_menu_window">Window</a></li>
+<li><a href="http://localhost:2368/#ui_menu_misc">Misc</a></li>
+<li><a href="http://localhost:2368/#ui_menu_help">Help</a></li></ul></li></ul></li>
+<li><a href="http://localhost:2368/#mod_attrs">Section III – The modules and their attributes</a>
+<ul><li><a href="http://localhost:2368/#mod_attrs_joint">Joint module</a></li>
+<li><a href="http://localhost:2368/#mod_attrs_spline">Spline module</a></li>
+<li><a href="http://localhost:2368/#mod_attrs_hinge">Hinge module</a>
+<a name="installation"></a>  </li></ul></li>
+</ul>
+
+<div><br></div>  
+
+<h2 id="anameinstall_wina"><a name="install_win"></a>  </h2>
+
+<h3 id="sectioniinstallation">Section I – Installation</h3>
+
+<h5 id="installationonwindows"><em>Installation on Windows</em></h5>
+
+<p>First, extract the contents of the downloaded archive file <code>mrt.zip</code> to your Maya scripts directory. For example, if you’re running Maya 2014, extract the contents to, <code>C:/Users/&lt;account_name&gt;/Documents/maya/2014-x64/scripts</code> (If C: is your primary drive volume). If you do that, you will see the following contents in your Maya scripts directory.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-1-1.jpg" width="550"></div>
+
+<p><br>The scripts directory on your computer could be empty or have existing scripts. You may also have a <code>userSetup.mel</code> or a <code>userSetup.py</code> file, which is okay; if you have neither, MRT will automatically create a <code>userSetup.mel</code> file which<a name="install_linux"></a> is needed.</p>
+
+<h5 id="installationonlinux"><em>Installation on Linux</em></h5>
+
+<p>You can use the command line to extract the archive <code>mrt.zip</code> to the Maya scripts directory. Depending on the linux distribution you’re running, you may use a different command compared to what’s shown below. If you’re using Maya 2014, you’ll find the scripts directory at <code>/home/&lt;account_name&gt;/maya/2014-x64/scripts/</code>. In order to extract the zip file, use the following steps. Also, please account for superuser operations, as I’m not listing them here. If you don’t have <code>unzip</code> installed, do it first by doing <code># yum install unzip</code> at the terminal. Now go to the directory where you’ve downloaded <code>mrt.zip</code>, and then use the following <a name="install_mac"></a>command, <code>$ unzip mrt.zip -d /home/&lt;your user account name&gt;/maya/2014-x64/scripts</code>.</p>
+
+<h5 id="installationonmac"><em>Installation on Mac</em></h5>
+
+<p>You can use the Finder or the terminal to perform the installation. In Maya, get the maya scripts directory using the command <code>internalVar -userScriptDir</code> which will provide a path <code>/Users/&lt;account_name&gt;/Library/Preferences/Autodesk/maya/2014-x64/scripts/</code> if you're using 2014. Manually unzip the contents of <code>mrt.zip</code> to that directory or use the command line. Use the <code>unzip</code> command like in the linux installation.</p>
+
+<hr>
+
+<p>After you’re done extracting the files to its destination, execute Maya, and run the mel command <code>MRT</code>. If your version of Maya and the OS is supported, it will confirm and display a window as shown below:</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-2.jpg" width="600"></div>
+
+<p><br>If you receive the confirmation window, Modular rigging tools was successfully installed. To use it, please re-start Maya, and type the mel command <code>MRT</code> to begin.<a name="ui"></a>  </p>
+
+<h2 id="anameui_createa"><a name="ui_create"></a>  </h2>
+
+<h3 id="sectioniitheuserinterface">Section II – The user interface</h3>
+
+<h4 id="createtab">"Create" tab</h4>
+
+<p>The <code>Create</code> tab has options to create modules. Each module in the scene is a representation of a joint or a joint chain, depending on the module type. You can also create a mirrored module pair, each a mirror of the other. You can use it to represent, for example, a pair of legs on a biped. Optionally, along with the modules, you can create proxy geometry, which can be modified to match the character profile.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-4.jpg" width="440"><a name="ui_mod_create"></a></div>
+
+<p><br><br><strong>Module Creation</strong> - Basic attributes for the module type, nodes and its initial length.</p>
+
+<p><strong>Module Type :</strong></p>
+
+<p><em>Joint Node</em> - Create a module with single or multiple joint nodes in a hierarchy, representing a single joint chain. You can manipulate the module node(s) by direct translation to pose the module.</p>
+
+<p><em>Spline Node</em> - Create a module with controls for posing a joint chain as a spine. Here, you cannot directly translate the module nodes unlike in a joint module, since they’re attached to a spline curve. You’re given controls to modify the curve as you see fit.</p>
+
+<p><em>Hinge Node</em> - Create a module with three joint nodes in a chain. Here, you cannot directly affect the orientation of the nodes (joints). As you translate the node(s), they maintain their orientation down the chain. The second or the middle node rotates in one axis, also known as the preferred axis for rotation indicated by an arrow curve. This joint chain generated from this module is suitable for use with an IK solver.</p>
+
+<p><strong>Number of nodes</strong> - Quantity of nodes in a hierarchy for a module to be created. Consider this as the number of joints in a hierarchy. If the number of nodes is equal to one for a module, it represents a single joint.</p>
+
+<p><strong>Length of the module</strong> - The initial length or size of the module at creation. This is the relative distance in world units between the start and end node in a module. This option is set to zero if the Number of nodes option in equal to one (see above).</p>
+
+<p><strong>Create</strong> - Generate a module using the specified options.</p>
+
+<p><strong>Undo last create</strong> - Remove the last created module in the creation queue. This queue is erased if the MRT window is closed and started again.<a name="ui_create_opt"></a></p>
+
+<hr>
+
+<p><strong>Creation options</strong> - Options for the specifying the geometric plane on which the module would be created. This plane is used as a reference for building the module node hierarchy, and assigning local axes orientation to each node (to be generated as joint(s)) using the information from Node axes option (see below). The length of the module would be parallel to the specified plane. You also have to keep in mind that if the number of nodes in a module is equal to one, it will always have world axes orientation; in that case, the node axes option would be irrelevant.</p>
+
+<p><strong>Creation Plane :</strong></p>
+
+<p><em>XY, YZ or XZ</em> - Specify the plane on which the module would be created. Think of this as the “working plane” on which the module nodes would be laid out along its length (see above, Length of the module).</p>
+
+<p><strong>Offset from creation plane</strong> - Distance of the module to be created from the creation plane, in world units. This option is useful if you’re creating a pair of mirror modules, and you want to specify the offset between them (half the actual distance).</p>
+
+<p>In the figure below, you can idea about how the creation plane works while creating modules. The joint module with four nodes (1) is created on the ”XY” plane (2) with an offset of 4 world units from the plane. The hinge module (3) is created on the ”YZ” plane (4) with an offset of 3 world units. The spline module (5) is created on the ”XZ” plane (6) with an offset of 5 world units.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-5.jpg" width="550"></div>
+
+<p><br><strong>Node Axes</strong> - The joint axes that will be derived from the nodes in the module. The node "aim" axis is represented by the arrow on the segment curve between two nodes in a module. The "up" and "plane" axes are represented by the node orientation controls (look for the direction suggested by the control curves based on colour). The representation colours for X, Y and Z values are red, green and blue. This option is irrelevant if the number of nodes is equal to one, as its local axes will be set to “world”.</p>
+
+<p><em>Aim axis</em> - The twist axis for the module nodes. This is the axis along the length of a bone, i.e, when two joints are in a hierarchy.</p>
+
+<p><em>Up axis</em> - The axis perpendicular to the creation plane, which will guide the secondary world axis orientation for the module nodes.</p>
+
+<p><em>Plane axis</em> - The axis parallel to the creation plane, which will be the third axis for module nodes (joints).<a name="ui_node_compt"></a></p>
+
+<hr>
+
+<p><strong>Node components</strong> - Each module has components for representing its node hierarchy, controls for adjusting the node orientation and proxy
+geometry (optional).</p>
+
+<p><em>Hierarchy</em> - Arrow shape(s) to represent/indicate the node hierarchy. It cannot be manually transformed. It’s also applied with a colour indicating the aim axis (X for red, Y for green and Z for blue).</p>
+
+<p><em>Orientation</em> - Controls between two consecutive nodes in a hierarchy which can be rotated along the aim axis to modify the orientation for the parent node. For example, if the module consists of two nodes, this control can be used to modify the orientation for the first node. The second node, being last in the node hierarchy, will inherit the orientation from its parent node.</p>
+
+<p><em>Proxy Geometry</em> - Optionally, low-resolution polygon geometry can be created along with the modules which can be modified to fit the character profile. By default, the display type for all proxy geometry is set to reference mode.<a name="ui_proxy_geo"></a></p>
+
+<hr>
+
+<p><strong>Proxy geometry</strong> - If enabled under "Node components", specifies options for creating module proxy geometry.</p>
+
+<p><strong>Create Bones</strong> - Create proxy geometry between every consecutive nodes. Think of it as creating a geometry along the length of a bone, between two joints. This option is disabled if the number of nodes equals one.</p>
+
+<p><strong>Create Elbow</strong> - Create proxy geometry on top of every node.</p>
+
+<p><strong>Elbow proxy type</strong> - Sphere / Cube - Options for specifying the geometry type to be built for elbow proxy.</p>
+
+<p><strong>Mirror Instancing</strong> - If module mirroring is enabled, this option creates a single shape node for each proxies in a mirrored pair of modules. In this case, modifying a proxy geometry on a module on either side will also affect its mirror.<a name="ui_mirror_func"></a></p>
+
+<hr>
+
+<p><strong>Mirroring &amp; Transform Function</strong> - Optionally, a module can be mirrored along the axis perpendicular to the creation plane (on its either side of the plane) to create two copies that share the same type of components and attributes. The position of every object that can be transformed in a module and its mirrored counterpart have the same relative distance from the creation plane. For example, if you create a pair of mirror modules on creation plane ‘XY’, one module will be offsetted at +Z and its mirror at -Z, where the absolute value of this offset from the creation plane is specified by the option, ”Offset from creation plane” (see above). Also, if you modify any attribute on a module, it changes the same attribute on its mirrored module.</p>
+
+<p><strong>Mirror module</strong> - On / Off - Toggle creation of mirrored modules.</p>
+
+<p><strong>Transform Function</strong> - While assigning control rigs on joint hierarchies created from mirror modules, it is necessary to specify the type of orientation for joints in mirrored joint hierarchies, and the orientation for translate controls, which may be a part of a control rig assigned to these joint hierarchies. For example, if you assign ”Reverse IK control” to both of the joint hierarchies for a mirrored pair of legs with ”behaviour” as the rotation function for the joints, you also want to assign translation function as ” world ” to both of the translate controls for the legs; if you select both of the controls at the same time, you also want to move them together (unless you’ve set the move axis as ”world“).</p>
+
+<p><strong>Translation</strong> - This setting is enabled for single, non-mirrored modules as well. It applies to the translate controls in a control rig.</p>
+
+<p><strong><em>World</em></strong> - Every translate control, part of a control rig assigned to a joint hierarchy created from a module, has world orientation.</p>
+
+<p><strong><em>Local Orientation</em></strong> - Most of the translate controls (part of a control rig assigned to a joint hierarchy) are applied with orientation according to the local rotation axes of the closest joint from its position. The exception is that in certain cases, you always want a translate control to have world orientation; for example, the base translation control for a spine FK control rig.</p>
+
+<p><strong>Rotation (Mirror only)</strong> - This setting can be used when module mirroring is enabled.</p>
+
+<p><strong><em>Behaviour</em></strong> - Both of the joint hierarchies generated from a pair of mirrored modules have opposite orientation. The local rotation axes for a joint is in opposite direction of its counterpart.</p>
+
+<p><strong><em>Orientation</em></strong> - Every joint and its counterpart in mirrored joint hierarchies generated from a pair of mirrored modules have same orientation.<a name="ui_mod_naming_clr"></a></p>
+
+<hr>
+
+<p><strong>Module naming / Handle colour -</strong></p>
+
+<p><strong>User specified name</strong> - Name for the module to be created. It is preferable that you name it as the part it would represent in a character rig or skeleton. You can use alphanumeric characters and underscores, but no caps (left<em>arm, right</em>leg).</p>
+
+<p><strong>Handle Colour</strong> - Maya colour index to be assigned to the node handle(s) in a module.<a name="ui_edit"></a></p>
+
+<hr>
+
+<h4 id="edittab">"Edit" tab</h4>
+
+<p>The <code>Edit</code> tab has options to work with module(s) in a scene to make them useful. You can set up parent relationships between modules, in order to represent a character joint hierarchy. You can also inspect the scene module list and its hierarchy. Here, you can delete module(s), duplicate them as well as the ability to rename them.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-6.jpg" width="440"><a name="ui_mod_coll"></a></div>
+
+<p><br><br><strong>Module Collections</strong> - This frame lists module collection file(s) that are currently loaded and can be installed into the current scene. It also displays the collection description stored with each file. A module collection file contains saved module(s) along with their relationships. As you’ll see later, you can also select and save specific module(s) in the scene as a collection, along with any other module(s) that may be related to it (see module parenting, below), or you can save all scene modules as a single collection file.</p>
+
+<p><strong>Install selected module collection into the scene</strong> - Gets all the necessary info from a loaded module collection file which is currently selected in the list, and installs it into the current scene.</p>
+
+<p><strong>Edit description for selected module collection</strong> - Modify the module collection description stored in the file for the selection in the list. You will need to enter a new description in the pop-up window.</p>
+
+<p><strong>Delete selected module collection</strong> - It allows you to remove/unload a selected module collection file from the list, or delete it from the disk.<a name="ui_scene_mods"></a></p>
+
+<hr>
+
+<p><strong>Scene modules</strong> - Here you can see the list of module(s) currently in the scene. You can "<strong>Sort</strong>" the list <em>”Alphabetically“</em> or <em>”By hierarchy“</em>. Every module is displayed with its <code>&lt;User Specified Name&gt; (&lt;Module Type&gt;)</code>.
+If a module is a part of a pair of mirrored modules, it is displayed in italics. You can select module(s) in the scene using the list. </p>
+
+<p>Adjacent to each module name as specified, to its left, there are buttons to control the <code>V</code> visibility of the module in the viewport, <code>P</code> visibility of its proxy geometry, if it has one, and <code>R</code> to toggle reference mode for its proxy geometry. All buttons are set to true for a new module.</p>
+
+<p>Below the scene module list window frame, you have options to increment and decrement the list window frame height using the buttons <code>+</code> and <code>-</code>. You can reset the height to a default value using the button <code>R</code>.</p>
+
+<p><strong>Save selected module(s) as a collection</strong> - You can select one or more modules in the viewport or in the scene module list and save them in a collection file. If a module is a part of a mirrored pair, only one of the modules has to be selected and its mirror would be saved along with the collection. You also need to enter a description in the pop-up window for the module collection to be saved.</p>
+
+<p><strong>Include</strong> - While saving a set of selected modules as a collection, you can include other modules (which may or may not be selected) in relationship with them. Relationships are set-up using module parenting (see below).</p>
+
+<p><strong>Parent</strong> - </p>
+
+<p><em>All</em> - Collect and append all parent modules (all levels) for the currently selected module(s) to the module collection set to be saved.</p>
+
+<p><em>Direct</em> - Collect and append only the direct parent modules (one level) for the currently selected module(s) to the module collection set to be saved.</p>
+
+<p><em>None</em> - Do not append any parent modules for the currently selected module(s) to the module collection set to be saved.</p>
+
+<p><strong>Children</strong> - </p>
+
+<p><em>All</em> – Collect and append all children modules (all levels) for the currently selected module(s) to the module collection set to be saved.</p>
+
+<p><em>Direct</em> - Collect and append only the direct children modules (one level) for the currently selected module(s) to the module collection set to be saved. </p>
+
+<p><em>None</em> - Do not append any children modules for the currently selected module(s) to the module collection set to be saved.</p>
+
+<p><strong>Rename selected module</strong> - Modify the user specified name for a selected module. You need to enter a new name into the adjacent text field.</p>
+
+<p>You can also rename by modifying a module name in the scene modules list. This feature was previously unsupported, but works under the "open-source" versin of MRT.</p>
+
+<p><strong>Delete selected module</strong> - Remove a selected module from the current scene. If that module is a part of a mirrored pair, both the modules would be deleted. You should never try to manually delete a module.</p>
+
+<p><strong>Duplicate selected module</strong> - Make a copy of the currently selected module. If the module is a part of a mirrored pair, both the modules would be copied. The pop-up window will display the following options : <strong><em>Enter relative offset for duplication</em></strong> - XYZ distance in world units relative to the position of the original module where its copy would be placed; <strong><em>Maintain parent connections</em></strong> - Create the parent connection for the copied module by getting the existing parent relationship info from the original module.<a name="ui_mod_parenting"></a></p>
+
+<hr>
+
+<p><strong>Module parenting</strong> - In this section, you can set-up parent relationship between two modules in a scene. A relationship is indicated by a linear curve with an arrow in the middle connecting the parent module node and the root node of the child module. When joint hierarchies are generated from scene modules as you’ll see later (while creating a character), the relationship type between two modules becomes important. Every module in the scene is converted into a distinct joint hierarchy, similar to the node hierarchy in a module. When a <em>”Constrained“</em> parent relationship (represented by a black arrow) is set-up between two modules and when the joints are generated from modules, the root joint of the child joint hierarchy is connected to its parent joint by a DG connection using constraints whose weights can be adjusted. Thus, one can detach\re-attach a child joint hierarchy from its parent joint in a character. When a <em>”Hierarchical”</em> parent relationship (represented by a white arrow) is set-up between two modules, the root joint of the child joint hierarchy has a DAG relationship with its parent joint. Therefore, using this option, you can combine two more module to form a single, custom joint hierarchy.</p>
+
+<p><strong>&lt; insert parent module node ></strong> field - Select a module node as the parent. Use the <code>&lt;&lt;</code> button to insert the node name into the field. Press <code>C</code> to clear the field.</p>
+
+<p><strong>&lt; insert child module ></strong> field - Select a module (any module component can be selected) as child. It uses the selection to derive the module namespace. Use the <code>&lt;&lt;</code> button to insert the module name into the field. Press <code>C</code> to clear the field.</p>
+
+<p>Use the colour guides to correctly identify the fields.</p>
+
+<p><strong>Parent</strong> – Create the parent relationship between the two modules.</p>
+
+<p><strong>Unparent</strong> - This button is enabled when a module is inserted into the <em>&lt; insert child module ></em> field. It removes its any existing relationship with a parent module node.</p>
+
+<p><strong>Snap parent to child</strong> - Place the parent module node at the position of the root node of the child module. There is an exception to this; if the parent module node is a part of a spline module, this option is disabled. A node in a spline module cannot be moved independently.</p>
+
+<p><strong>Snap child root to parent</strong> - Place the root node of the child module at the position of its parent module node.<a name="ui_rig"></a></p>
+
+<hr>
+
+<h4 id="rigtab">"Rig" tab</h4>
+
+<p>The <code>Rig</code> tab has options to convert scene modules into joint hierarchies by creating a character. These individual joint hierarchies are connected by DG connections (constraints) or DAG relationships (see above for module parenting). Together, all joint hierarchies can be transformed by a character root control (blue-red coloured, cross-shaped curve, with name <code>ROOT_CNTL</code>), and with its parent, world control (grey coloured, curve shape with four arrows, with name <code>WORLD_CNTL</code>). You can also save all the joint hierarchy configuration in a character in a character template file, which can be re-used. After that, you can apply single or multiple control rig(s) to a joint hierarchy in a character. For example, you can select a joint hierarchy for a leg in a biped, which will automatically display a set of control rigs that can be applied to it. Finally, you can set-up parent target(s) for controls in an applied rig.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Modular-Rigging-Tools---Documentation-rig_tab.jpg" width="440"><a name="scene_hierarchy"></a></div>
+
+<p><br>Below - Scene organization for a character. All components are placed under a main group named after the character name <code>hans</code>. All joint hierarchies are distinct and grouped individually under <code>&lt;characterName&gt;|joints</code>. If you’re using a geometry that’ll be skinned to the character joints, place it under <code>&lt;characterName&gt;|geometry|skinGeometry</code>. If you want to select all the joints for skinning at once, use the selection set <code>MRT_&lt;characterName&gt;_skinJointSet</code>. All proxies are placed under <code>&lt;characterName&gt;|geometry|proxyGeometry</code>. If you’ve other meshes such as for blendshapes, you can place it under <code>&lt;characterName&gt;|misc|deformers</code>. You can override the visibility/selection states for these groups using the display layers that are created along with the character.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Modular-Rigging-Tools---Documentation-hierarchy.jpg" width="700"><a name="rig_character_creation"></a></div>
+
+<p><br><br><strong>Character creation</strong> -</p>
+
+<p><strong>Create character from scene modules</strong> - Gather all information from scene modules along with their parent relationships and convert them into joint hierarchies. If two modules have hierarchical parent relationship, they will result in a single joint hierarchy unlike a constrained parent relationship. Any proxy geometry that may exist along with the scene modules will be preserved.</p>
+
+<p><strong>Revert current character to modules</strong> - Delete the current character in the scene and re-install its module(s). Any control rig(s) that may have been
+applied to joint hierarchies for the character would be removed as well.</p>
+
+<p><strong>Character name (no underscore)</strong> - Input text field to provide a user specified name for the character to be created.<a name="ui_templ_ctrl_rig"></a></p>
+
+<hr>
+
+<p><strong>Character templates and Control rigging</strong> -<a name="save_char_templ"></a> Options for working with character templates and attaching/detaching control rigs to character hierarchies.</p>
+
+<p><strong>Save character template from scene</strong> - Save the current character configuration in the scene with all its joint hierarchies to a file. You can only save a character template before applying a control<a name="ui_templ"></a> rig to a joint hierarchy in a character.</p>
+
+<p><strong>Templates</strong> - This frame lists character template file(s) that can be installed into the current scene. Only one character can exist in a scene; you cannot install a character from a template file into a scene that already contains another character; you need to create a new scene. Also, along with each character template file, you can also view its description.</p>
+
+<p><strong>Install selected character template</strong> - Install selected character template file into a new scene.</p>
+
+<p><strong>Edit description for selected character template</strong> - Modify the character template description stored in the file for the selection. You will need to enter a new description in the pop-up window.</p>
+
+<p><strong>Delete selected character template</strong> - It allows you to remove/unload a selected character template file from the list, or delete it from the disk.<a name="ui_ctrl_rig"></a></p>
+
+<hr>
+
+<p><strong>Control rigging</strong> - This frame lists control rigs that can be applied/attached to a selected joint hierarchy. To view a detailed explanation of how
+control rigging is applied to character joint hierarchies, visit the page <a href="http://animformed.github.io/control-rigging-with-modular-rigging-tools-for-maya/">here</a>.</p>
+
+<p><strong>Click to view available control rigs for character hierarchies</strong> - Opens a window describing all available control types and their methods. If custom user defined control classes are available, they will override the description of their built-in super classes.</p>
+
+<p><strong>Attach Rig</strong> - Select and apply an available control rig to a selected joint hierarchy.</p>
+
+<p><strong>Detach Rig</strong> - Select and remove an attached control rig from a selected joint hierarchy.</p>
+
+<p>You can attach multiple control rigs to a joint hierarchy in a character. Suppose you’ve applied a number of rigs to a leg hierarchy, you can switch the effect of a control rig and the visibility of its controls by changing its attributes on the character root control <code>ROOT_CNTL</code> (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Modular-Rigging-Tools---Documentation-root_cntl_attrs-2.jpg" width="700"><a name="ui_parent_switch"></a></div>
+
+<hr>
+
+<p><strong>Parent Switching</strong> - All control handles in a control rig that’s applied to a character joint hierarchy can have one or more target parent control handles. You can also add character root transform as a parent target. You can switch parent(s) under the channel box attribute <em>”Target Parents”</em> for a control handle.</p>
+
+<p><strong>&lt; insert control ></strong> field - Select and insert a valid control handle for adding / removing target parent(s) to / from it. Use the <code>&lt;&lt;</code> button to insert a selection, <code>Clear</code> button to reset the input field.</p>
+
+<p><em>Parent switch target(s)</em> - A list of current parent target(s) for the inserted control handle and any new parent target(s) to be created that are added, with the suffix <em>"(new)"</em>.</p>
+
+<p><strong>Add selected control to target list</strong> - Select and add a control handle to the list as a target parent. You can also add the character root transform as the target parent.</p>
+
+<p><strong>Remove All</strong> - Clear all target parent(s) from the list.</p>
+
+<p><strong>Remove selected</strong> - Remove a selected target parent from the list.</p>
+
+<p><strong>Create / Update parent switch for inserted control</strong> - Apply any changes made to the list of parent switch target(s) for the inserted control handle.<a name="menu_file_options"></a></p>
+
+<hr>
+
+<p><a name="ui_menu_file"></a> <br>
+<strong>Menu bar options</strong></p>
+
+<p>The <code>File</code> menu has options and settings to load and save module collection file(s) character template(s).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-11.jpg" width="730"></div>
+
+<p><br><strong>Auto-load settings for module collection(s) -</strong></p>
+
+<p><em>Preserve and load current list at next startup</em> - This option saves an internal reference to all currently loaded module collection file(s) for the ”Module collections” list, and re-loads them in the list the next time MRT is executed.</p>
+
+<p><em>Load new saved collection(s) to current list</em> - Add any new module collection files(s) that may be saved to the ”Module collections” list.</p>
+
+<p><strong>Load module collections from directory -</strong></p>
+
+<p><em>Clear current collection list before loading</em> - While loading module collection file(s) from a directory on disk, clear the current list for ”Module collections“.</p>
+
+<p><em>Load collection(s) from directory</em> - Load all module collection file(s) from a directory (you have to select a directory on the next pop-up window).</p>
+
+<p><strong>Load module collections selectively -</strong></p>
+
+<p><em>Clear current collection list before loading</em> - While loading one or more module collection file(s), clear the current list for ”Module collections“.</p>
+
+<p><em>Load collections(s)</em> - Select and load one or more module collection file(s) from disk.</p>
+
+<p><strong>Settings for loading character templates(s) -</strong></p>
+
+<p><em>Preserve and load current list at next startup</em> - This option saves an internal reference to all currently loaded character template file(s) for the ”Templates” list, and re-loads them the next time MRT is executed.</p>
+
+<p><em>Load new saved template(s) to current list</em> - Add any new character template files(s) that may be saved to the ” Templates ” list.</p>
+
+<p><em>Clear current template list before loading</em> - While loading character template file(s) from a directory on disk, clear the current list for ”Templates“.<a name="ui_menu_window"></a></p>
+
+<hr>
+
+<p>The <code>window</code> menu has the following options -</p>
+
+<p><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-10.jpg" width="440"></p>
+
+<p><strong>Collapse all frames</strong> - Collapse all frames within the MRT interface.</p>
+
+<p><strong>Expand all frames</strong> - Expand all frames in the current tab within the MRT interface.</p>
+
+<p><strong>Install shelf button</strong> - Install a shelf button on the currently active Maya shelf tab.<a name="ui_menu_misc"></a></p>
+
+<hr>
+
+<p>The <code>Misc</code> menu has the following options -</p>
+
+<p><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-12.jpg" width="440"></p>
+
+<p><strong>Swap hinge node root and end handle positions</strong> - If you’re using a hinge module, you can quickly swap the positions for the root and end transform handles. This allows you to reverse the node hierarchy layout along the length of the module.</p>
+
+<p><strong>Delete selected module proxy geometry</strong> - If a proxy geometry for a module is not in reference mode and is not needed, you can delete it using this option. You should not delete it manually. For example, if you’re using a hinge module with proxy geometry to create an arm, you can select an elbow proxy on one end and delete it using this option (at wrist position).</p>
+
+<p><strong>Delete all proxy geometry for selected module</strong> - Remove all proxy geometry for a selected module.</p>
+
+<p><strong>Delete history on all proxy geometry</strong> - Removes all construction history all for proxy geometries for modules in the scene. This is useful if you edit any proxy geometry. Do not try to manually delete history for module proxy geometry.</p>
+
+<p><strong>Purge auto-collection files on disk</strong> - Clears all auto-collection files that are generated while creating characters. These file(s) are only for internal use by MRT and are necessary while reverting a character into scene modules. This option is needed here since I didn’t implement an auto-deletion procedure for these files, and they may take up some disk space over time.</p>
+
+<p><strong>Create parent switch group for selected control handle</strong> - Create a parent switch group for a control handle to add parent targets to it.<a name="ui_menu_help"></a></p>
+
+<hr>
+
+<p>The <code>Help</code> menu has the following options -</p>
+
+<p><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-13.jpg" width="440"></p>
+
+<p><strong>Documentation</strong> - View online documentation for MRT.</p>
+
+<p><strong>Tutorial / How To’s</strong> – View online tutorial for creating a biped character using MRT.</p>
+
+<p><strong>Extending MRT - Writing custom control rigs</strong> - Online guide for extending / writing new control classes with custom control rig methods by a user.</p>
+
+<p><strong>Known Issues / Workarounds</strong> - Display a window with a list of known issues with MRT and workarounds.
+<a name="mod_attrs"></a> <br>
+<strong>About</strong> - Display MRT version.</p>
+
+<hr>
+
+<p><a name="mod_attrs_joint"></a>  </p>
+
+<h3 id="sectioniiithemodulesandtheirattributes">Section III – The modules and their attributes</h3>
+
+<div><br></div>
+
+<h5 id="jointmodule">JOINT MODULE</h5>
+
+<p><strong>With single node</strong> -
+(1) Without proxy geometry (2) With Elbow proxy geometry, sphere type (3) With Elbow proxy geometry, cube type.</p>
+
+<p><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-14.jpg" width="730"></p>
+
+<p>The node handle is represented by a yellow coloured circle handle, which you can select and translate. The node orientation handle is represented by the tricoloured axes curve, which you can rotate to adjust the orientation of the joint that would be generated from it. The module transform handle is represented by the brown coloured locator, and if you select it, you can see a list of custom attributes for the module in the channel box.</p>
+
+<p><img style="float: left" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-15.jpg" width="400" hspace="15"></p>
+
+<p><strong>Global Scale</strong> - To scale the module and its proxy geometry.</p>
+
+<p><strong>Node Orientation Representation Toggle</strong> - Toggle visibility for the orientation handle for node(s) in a module.</p>
+
+<p><strong>Node handle size</strong> - Adjust the size of the node handle(s). This value is used to calculate the radius of joints to be generated while creating a character.</p>
+
+<p><strong>Node Rotation Order</strong> - Set the rotation order for the joints, which will be converted from nodes while creating a character.</p>
+
+<p><strong>Proxy Geometry Draw</strong> - If the module contains proxy geometry, this enum attribute adjusts the draw style for the proxy geometry in the viewport. Options are ”Transparent” and ”Opaque“.</p>
+
+<p><strong>With multiple nodes (two or more)</strong> -
+(1) Joint modules with and without proxy geometries. You’ll notice that each of the four modules have node handles (yellow circles), hierarchy representations (red arrow for X as aim axis) and orientation representation controls to adjust node orientations (green and blue curve controls, for Y and Z axes). (2) Modules are converted to joint hierarchies after creating a character. (3) Local rotation axes for the joints, showing joint orientations.</p>
+
+<div align="center">Below - Joint module with three nodes.</div>
+
+<p><br><div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-16.jpg" width="730"></div></p>
+
+<p>Below - Module transform and its custom attributes for toggling and adjusting module components. Selecting the module transform displays the module attributes in the channel box.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-17.jpg" width="700"><a name="mod_attrs_spline"></a></div>
+
+<hr>
+
+<h5 id="splinemodule">SPLINE MODULE</h5>
+
+<p><strong>With five nodes (min # of nodes)</strong> -
+(1) Spine module with and without proxy geometries. Proxies can be modified at any time. The position of module nodes (black coloured circles) are affected by translating the cube-shaped control curves. The spline module has two module transforms, “start” and “end” (dark and light brown coloured squares). You can access the module attributes in the channel box by selecting the “start” module transform. (2) Modules converted to a character. You can see the local orientation of the joints that are generated.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-18.jpg" width="730"></div>
+
+<p><br><strong>Spline module attributes</strong> - <br>
+Select the ”start” spline module transform (dark brown square) to view attributes in the channel box. The first custom attribute ”Global size” scales all the control representations (see below).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-19.jpg" width="730"></div>
+
+<p><br><em>Below</em> - <br><em>Left</em> : The tri-coloured axes curve shape represents the orientation for the spline nodes. You can modify the default local / object orientation for the nodes by changing the value for “Axis Rotate“. This rotates the orientation representations along the aim axis.<br><em>Right</em> : You can toggle the visibility of the orientation representation for nodes by changing the enum attribute “Node Orientation Info“.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-20.jpg" width="730"></div>
+
+<p><br><em>Below</em> - <br><em>Left</em> : You can modify the orientation type for the module nodes by changing the enum attribute “Node Orientation Type“. By default, its value is set to ”Object“. Changing the value to ”World” sets world orientation for all module nodes. Note that for world orientation type, the attribute <br>
+“Axis Rotate” has no effect and gets hidden.<br><em>Right</em> : The attribute “Node Local Orientation Representation Size” can be used to modify the size of orientation representations.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-21.jpg" width="730"></div>
+
+<p><br>At times, you may notice that one or more orientation representations may get reversed (1) as you adjust the profile of the spline module curve to position the nodes. This may or may not be desirable for you, but if it’s not, you can select the affected orientation representation curve (2) and access its channel box attribute, ”Tangent Up Vector” (3) and modify the default value from “Original” to “Reversed”. This will correct the orientation representation for the node as desired (4). See below.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-22.jpg" width="730"><a name="mod_attrs_hinge"></a></div>
+
+<hr>
+
+<h5 id="hingemodule">HINGE MODULE</h5>
+
+<p>This module consists only of only three nodes. Below, you can see a group of hinge modules with and without proxy geometry. The yellow coloured circles are node handles. This module has representation curve guides which assist in placing the middle node handle accurately. For example, if you’re creating an arm, you can use the hinge module to build the lower and upper limb of equal length. It also has (1) hierarchy representation curve arrows (red for X as aim axis) (2) Hinge axis representation arrow (blue for Z as the hinge axis, green for Y as up axis) (3), (4) Middle node position guide curve and aim, together they assist in aligning the middle or hinge rotation node (joint) with the mid-point aim (4) at the distance between the first and last module nodes. The preferred direction of rotation for the joint generated from the middle / hinge rotation node is represented by the curve arrow (5) (blue for rotation in Z axis). Further below, you can see the joints (with local rotation axes) that are generated after creating a character.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-23.jpg" width="650"></div>
+
+<p><br><div align="center">*Below *- <br>
+Select the module transform for the hinge module to see the module attributes.</div></p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-24.jpg" width="450"></div>
+
+<p><em>Below</em> -
+<br>Left : The enum attribute “Hinge Orientation Representation Toggle” turns on/off the visibility for hinge axis representation arrow and hinge preferred rotation representation arrow curve shapes.<br>Right : The enum attribute “Module Hierarchy Representation Toggle” turns on/off the visibility for node hierarchy representation arrow shapes. Other attributes can be used to modify the node handle sizes and rotation orders for the joints to be generated from them.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Modular-Rigging-Tools---Documentation-25.jpg" width="700"></div>]]></description><link>http://localhost:2368/modular-rigging-tools-documentation-2/</link><guid isPermaLink="false">8768197a-163f-4cb5-ad07-6eeffad9fddc</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Mon, 25 Mar 2013 02:54:00 GMT</pubDate></item><item><title><![CDATA[Control rigging with Modular rigging tools for Maya]]></title><description><![CDATA[<p>In the last part, we finished with building all the necessary scene modules for describing the rig, so now we will create a character. What’s going to happen now is that all the information from the modules will be gathered and processed internally to produce character joint hierarchies. Depending on the module relationships that you’ve set-up, each hierarchy can be applied with one or more control rigs depending on its type, such as a joint hierarchy for an arm consisting of three joints constructed from a hinge module will require an IK control rig. The application of a control rig that can be applied to a joint hierarchy can be divided into two broader cases, one where the joint hierarchy was built directly from a module, in case of the arm built from hinge module, and if the joint hierarchy was created from multiple modules by using hierarchical modular relationship between them.</p>
+
+<p>To better understand how control rig application will work for character joint hierarchies, consider the diagram below. Under the hood, the control rigging framework consists of collections of controls that can only be applied to a specific character joint hierarchy. Technically, each control collection is a group of methods in a class which derives/inherits its base methods from a base control collection/class (1) and is extended to include methods specific to the character hierarchy to which it can be applied. The base class (Base joint control) control methods cannot be applied directly except the control methods which belong to classes that are derived from it. The control methods inside the base class (FK and FK stretchy) is applicable to any joint hierarchy and hence they can be inherited in a new control class that is defined. The control rig collections or classes (2, 3 and 4) derived from the base collection (one-level) are restricted to joint hierarchies according to the type of modules they were created from. The spline control rig class (4) inherited from the base joint control class will have all the controls methods from it, in addition to its own methods, and can only be applied to a joint hierarchy created from a spline module (In the diagram, all control rig methods described in italics, which are a part of a class are derived). Going further, you can also derive a control rig collection from the base (one-level), which can be only be applied to joint hierarchies which are created from multiple module types by using hierarchical parent relationships between the modules (refer to part III). For example, a custom joint hierarchy might have to be created for a biped leg which requires the hip, knee and ankle joints in an IK plane, so it’ll have to be created from a hinge module, but then you also have to create foot joints, i.e, heel, ball and toe from joint modules, which forms the entire leg hierarchy. Therefore, you have to write a control rig class specific for biped “leg” functionality (5) which is a derived class and its control methods can be applied to a custom leg joint hierarchy, which will drive all the joints in it, by using a method, such as a reverse foot control. In general, you can also modify/override and extend any control rig collection/class derived from base class (two or more level). Here, for linear joint chains built from joint modules (6) can be included with updated functionality or with a new control rig method such as a ribbon stretchy control (an example). The control rig framework will identify this and will use the newer collection/class information:</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-V--2.jpg" width="700"></div>
+
+<p>Now, if you’re only interested in using the tools, this information might not be pertinent, but it’s good to know how it works. The only important information to know here is to use hierarchical relationships for module parenting when it’s necessary to get specific functionality with control methods when rigging a specific part of a character which requires a custom joint hierarchy, which can’t be constructed with a single module.</p>
+
+<p>Before we can use control rigging, we need to create a character as described before. Simply go to Character creation and provide a character name and execute <code>Create character from scene modules</code> (7). All your modules will be converted to joint hierarchies with proxy geometry attached, if any, along with a global controls, i.e, a character root control <code>ROOT_CNTL</code> and world control <code>WORLD_CNTL</code>.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Using-Modular-rigging-tools-for-Maya-create_char.jpg" width="410"></div>
+
+<p><br>You will notice in the scene that all the modules have been removed as well since they’re not needed any more. The character now is composed of distinct joint hierarchies, i.e, for legs, spine, arms, etc that are easily identifiable. All the objects are organized under a main group, named after the given character name (8). All the scene objects are placed under named display layers for toggling their visibility/selection states (9). The proxy geometry is now driven by the joints and is referenced. If you have an existing skin geometry for the character, you should place it under <code>&lt;characterName&gt;|geometry|skinGeometry</code> (10). For binding the skin geometry, you can use the self-generated set <code>MRT_&lt;characterName&gt;_skinJointSet</code> (11) to select the relevant joints from the character hierarchy.<a name="apply_control_rig"></a></p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Using-Modular-rigging-tools-for-Maya-hierarchy.jpg" width="700"></div>
+
+<p><br>With that done, now you’re ready to <strong>apply control rigging</strong> to character joints. Do not try to construct controls to these joints on your own, since their transform channels have incoming connections and they cannot be manipulated. I wouldn’t recommend breaking them since the control rigging application will no longer work. All you have to do is to select a joint hierarchy and you’d see the available control rigs that can be applied under the control rigging tab. You can select the control rig of your choice and click <code>Attach Rig</code>. For this example, we will use Reverse IK leg control (12).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-V--6.jpg" width="700"></div>
+
+<p><br>Similarly, you can apply reverse control rig to the right leg hierarchy. Continue applying control rigging to all character joint hierarchies as shown below. Apply to Spine (13), Arm (14), Hand/Fingers (15), Clavicle (16), Head (17) and Eyes (18).</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-V--7-1.jpg" width="700"></div>
+
+<p><br>Now that all the control rigs to the joint hierarchies have been applied, you can turn off the visibility of the character joint display layer.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Using-Modular-rigging-tools-for-Maya--hierarchy_skins_vis.jpg" width="600"></div>
+
+<p><br>Now you can pose and animate the character controls. To hide the controls, turn off the visibility of the control rig display layer.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Using-Modular-rigging-tools-for-Maya--Part-V--17.jpg" width="500"></div>
+
+<p><br>Thus, you have successfully rigged a custom character. To finish, you can now bind your character character geometry to the joints. To proceed, you have to put all the custom character geometry under <code>&lt;characterName&gt;|geometry|skinGeometry</code> (19). For this example, I have grouped all the geometry with the group <code>all_geo_grp</code>, under it. Now you can toggle the visibility of all the custom geometry with the <code>MRT_&lt;characterName&gt;_skin_geometry</code> display layer.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Oct/Animformed-_-Using-Modular-rigging-tools-for-Maya--hierarchy_skins.jpg" width="700"></div>]]></description><link>http://localhost:2368/control-rigging-with-modular-rigging-tools-for-maya-2/</link><guid isPermaLink="false">45635d6d-25ce-45b1-9360-9d37bccb8fb2</guid><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Thu, 20 Sep 2012 22:16:00 GMT</pubDate></item><item><title><![CDATA[Thoughts on a (my) demo reel]]></title><description><![CDATA[<p>So I was looking at my demo for a while and decided to tie up some loose ends. I have replaced the existing demo link with a new one; although I could have uploaded it for the next update, it seemed logical to modify and add to the existing one. With the last demo, I was going overboard with the time of the reel where some parts were getting longer and could be avoided, while keeping the important stuff. One has only so much time to watch the demo and depending on the audience, they want to get over with it as quickly as possible. If you’re doing your demo in parts, I guess it’s also important to not to use longer breaks in between as people might end up scrubbing. I don’t know about others, but I have done it. </p>
+
+<p>One thing to consider doing in a reel is that if you are showing demonstrations in a viewport, try not to sway too much from the centre while orbiting and panning. Sometimes you tend to speed up the viewport capture for the reel, and people who’d be watching it will have difficulty in trying to focus with what’s happening as you manipulate and navigate objects on screen. I also prefer to keep the UI elements discreetly as far as possible, so if you’re doing a custom UI, you have more options for cropping the video while editing. </p>
+
+<p>About using text captions; use them sparingly. Some people hardly read them, some do. Not everyone might be aware of what you’re saying, and a demo is usually viewed like a montage, even if it’s not meant for that purpose. If you want to keep an explanation of what you’re trying to show, accompany your demo with a breakdown. Those who want to know about what’s going on will need to look at it, and it’s a good idea to keep one.</p>
+
+<p>Lastly, you want to keep a copy of your demo on another website for download. Some people might not have a connection which allows them to stream continuously and they may want to save it locally and review it. For that, you want to make sure that your put keyframes on your video while encoding. For example, if your video is 24 frames per second, you may want to put a keyframe every 24 frames while encoding so a user can scrub over every second or access a random part of your video in that resolution. This can add to the file size, but it's worth it, and so you can increase the keyframe numbers if necessary.</p>]]></description><link>http://localhost:2368/thoughts-on-a-my-demo-reel-2/</link><guid isPermaLink="false">4ad48089-3c68-4263-b8e8-2d31a12167a8</guid><category><![CDATA[demo]]></category><category><![CDATA[reel]]></category><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Wed, 05 Sep 2012 21:28:00 GMT</pubDate></item><item><title><![CDATA[Constraining transforms to a shape in Maya]]></title><description><![CDATA[<p>This is one of those situations which I’ve dealt with many times before, but I still needed a solution in a single script which would allow me to attach a transform to a desired shape. Here are some of the methods you can use to do this manually in Maya:</p>
+
+<ul>
+<li><p>Applying pointOnSurfaceInfo / pointOnCurveInfo or pointOnMeshInfo (available in the devkit) to a shape node, which would constrain a
+transform by connecting to it.</p></li>
+<li><p>Constraining a transform by a single (or a collection) of components on a surface or a curve. You can either constrain to vertices/CVs or an edge.</p></li>
+<li><p>Using a follicle node attached to a surface or a mesh to drive a transform. This is only limited to surfaces and is not allowed on a curve.</p></li>
+</ul>
+
+<p>Using a follicle node has been one of the more popular methods since hair system was announced for Maya, but I have found that at times it’s not accurate and is limited by the use of UVs on a polygon mesh. If you’re trying to find the nearest UV location on a polygon mesh from a transform using a closestPointOnMesh node, sometimes, you’ll find discrepancies with the result position value from the node. You can see in the example below that in order to find a nearest point for a space locator (1) on a polySphere, I’ve used a closestPointOnMesh(CPM) node to get the final world position of the result, represented by a yellow dot (2). The CPM node also provides a UV location for the closest point on the surface of the sphere, which is fed into a follicle node (3). Clearly, the follicle transform is not at the world space position of the result from the CPM node, which is more accurate.</p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Constraining-transforms-to-a-shape-in-Maya-1.jpg" width="700"></div>
+
+<p><br><div align="center">Now notice the UV values among the attributes for the closestPointOnMesh and the follicleShape node.</div></p>
+
+<div align="center"><img src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Constraining-transforms-to-a-shape-in-Maya-3-3.jpg" width="700"></div>
+
+<p><br>In recent versions of Maya, a useful constraint, pointOnPoly has been added. But it’s only limited to meshes, and it depends on the surface UVs. It’s not a bad thing, but there’s always a situation when you want to modify them. Therefore, you’d have to re-constrain the transforms.</p>
+
+<p>I’ve written a script which offers a workaround, where I’ve taken the same approach by Michael Bazhutkin (rivet script) to loft a surface between two curves on a surface and use a pointOnSurfaceInfo along with an aim constraint to attach a transform. The only problem was to find the nearest edge pair on a poly face on a mesh from a transform in space, which would be converted to curves to perform the loft. The script also uses a pointOnSurfaceInfo and pointOnCurveInfo along with a tangent constraint to attach a transform to a NURBS surface or a curve.</p>
+
+<p><img style="float: left" src="http://localhost:2368/content/images/2014/Sep/Animformed-_-Constraining-transforms-to-a-shape-in-Maya-4.jpg" width="300" hspace="15"></p>
+
+<p>In the main window, you can select and insert multiple transforms which would be listed (4). You can also clear the transforms which will remove them from any operation. Then, you’d have to select the target shape for constraining (5). You can then perform constrain (6) on the transforms; any transform with locked translation or rotation will be skipped from constraining. You can maintain the position of the transform(s) by turning off Snap transform to shape (7).</p>
+
+<p>To <em>remove</em> the constrain(s) from the transform(s) attached to the surface, delete all the created transform(s) with the suffix <code>_attach</code>.</p>
+
+<p><div align="center"><a href="http://www.creativecrash.com/maya/script/constrain-attach-transform-to-a-shape" target="blank"><strong>DOWNLOAD FROM CREATIVECRASH</strong></a></div><br></p>
+
+<pre><code class="language-python">"""  
+constrainTransformToShape.py - v1.1
+
+v1.1 - Using constraint instead of DAG parenting to attach the  
+       transform(s) to the driver transform(s) for a given surface.
+
+Written by Himanish Bhattacharya
+
+Documentation:  
+http://animformed.github.io/constraining-transforms-to-a-shape-in-maya/
+
+Modify at your own risk.
+
+DESCRIPTION:  
+This script constrains a transform to a shape, i.e, you can constrain multiple transform(s) to  
+a polygon mesh, nurbs surface or a curve. You can maintain the current position of the transform(s)  
+or snap it to the surface or curve. It uses pointOnSurfaceInfo to attach a transform to a surface,  
+so it does not depend on UVs, if constraing to a polygon surface.
+
+CREDITS:  
+Michael Bazhutkin, the original author of the rivet script, for providing an important solution on how to use an  
+aim constraint with pointOnSurfaceInfo.
+
+USAGE:  
+Simply copy all the contents of the script, make a shelf button and run it.
+
+"""
+
+import re  
+import maya.cmds as cmds  
+import maya.OpenMaya as om
+
+######## DEFS ########
+
+def insertTransForConstr(args):  
+    """
+    Inserts a selected transform for constraining into the UI field.
+    """
+    selection = cmds.ls(selection=True)
+    objList = cmds.ls(selection, type='transform')
+    if objList:
+        s_height = len(objList)* 4
+        if s_height &gt; 150:
+            s_height = 150
+        if s_height &lt; 32:
+            s_height = 40       
+        cmds.scrollField(selectionScrollList, edit=True, text=', '.join(objList), height=s_height)
+    else:
+        cmds.warning('Please select a transform.')
+        cmds.scrollField(selectionScrollList, edit=True, text=' &lt; No transform selected &gt; ', height=32)
+
+def clearTransForConstr(args):  
+    """
+    Clears the transform name field in the UI for constraining.
+    """
+    cmds.select(clear=True)
+    cmds.scrollField(selectionScrollList, edit=True, text=' &lt; No transform selected &gt; ', height=32)
+
+def insertConstr(args):  
+    """
+    Checks and inserts a valid target shape to constrain to.
+    """
+    selection = cmds.ls(selection=True)
+    if selection:
+        transShape = cmds.listRelatives(selection[0], children=True, shapes=True, noIntermediate=True)
+        if len(transShape) == 1:
+            o_type = cmds.objectType(transShape[0])
+            if o_type == 'mesh':
+                cmds.text(constrTextLineType, edit=True, label='Constrain on: Polygon mesh')
+            elif o_type == 'nurbsSurface':
+                cmds.text(constrTextLineType, edit=True, label='Constrain on: Nurbs surface')
+            elif o_type == 'nurbsCurve':
+                cmds.text(constrTextLineType, edit=True, label='Constrain on: Nurbs curve')
+            else:
+                cmds.warning('The selected object\'s shape \"%s\" cannot be constrained to. Select and insert another shape.'%(transShape[0]))
+                cmds.text(constrTextLine, edit=True, label=' &lt; No constrain selected &gt; ')
+                cmds.text(constrTextLineType, edit=True, label=' &lt; No constrain type &gt; ')                       
+                return
+            cmds.text(constrTextLine, edit=True, label='%s | %s'%(selection[0], transShape[0]))
+        else:
+            cmds.warning('Multiple shape nodes found on \"%s\". Cannot constrain.'% selection[0])
+            cmds.text(constrTextLine, edit=True, label=' &lt; No constrain selected &gt; ')
+            cmds.text(constrTextLineType, edit=True, label=' &lt; No constrain type &gt; ')   
+    else:
+        cmds.warning('Please select a shape to constrain to.')
+        cmds.text(constrTextLine, edit=True, label=' &lt; No constrain selected &gt; ')
+        cmds.text(constrTextLineType, edit=True, label=' &lt; No constrain type &gt; ')
+
+def checkAndAppendExistingNames(string):  
+    """
+    Checks for duplicate name in the dependency graph, appends a suffix if necessary,
+    and returns it.
+    """
+    suffixList = [0]
+    if cmds.objExists(string):
+        if re.search('(?&lt;=_)\d+$', string):
+            base = re.split('(?&lt;=)_\d+$', string)[0]
+        else:
+            base = string
+            allNodes = cmds.ls()
+            for item in allNodes:
+                if re.match('^%s_\d+$'%base, item):
+                    suffix = re.split('(\d+)$', item)[1]
+                    suffixList.append(int(suffix))
+            currentSuffix = max(suffixList) + 1
+            return '{0}_{1}'.format(base, currentSuffix)            
+    return string
+
+def isAttributeLockedForTransInput(transform):  
+    """
+    Checks if one of the transform or rotate attributes in a transform is
+    locked. Returns a boolean.
+    """
+    trans_attr_list = cmds.listAttr(transform, locked=True)
+    if trans_attr_list:
+        for attr in trans_attr_list:
+            if re.match('^(translate|rotate)[X-Z]$', attr):
+                return True
+    return False
+
+def returnClosestEdgePairForPolyMesh(meshSurface, target):  
+    """
+    Returns a pair of edges for the closest face in polygon mesh with
+    respect to a target transform.
+    """
+    # Stores the edge indices
+    r_edgeIndices = []
+    # Get the iterator instance for the mesh surface shape
+    m_sel_list = om.MSelectionList()
+    cmds.select(meshSurface, replace=True)
+    om.MGlobal.getActiveSelectionList(m_sel_list)
+    meshSurfacePath = om.MDagPath()
+    m_sel_list.getDagPath(0, meshSurfacePath)
+    meshSurfaceIt = om.MItMeshPolygon(meshSurfacePath)
+
+    # Create a temp CP node for the mesh surface
+    np_node = cmds.createNode('closestPointOnMesh', skipSelect=True)
+    cmds.connectAttr(meshSurface+'.outMesh', np_node+'.inMesh')
+    cmds.connectAttr(meshSurface+'.worldMatrix[0]', np_node+'.inputMatrix') 
+
+    # Make temp grp to get a world transform for the target and feed it into the CP node.
+    trans_grp = cmds.group(empty=True)
+    tempConstraint = cmds.parentConstraint(target, trans_grp, maintainOffset=False)
+    cmds.delete(tempConstraint)
+    cmds.connectAttr(trans_grp+'.translate', np_node+'.inPosition')
+
+    # Get the closest face index for the target and return the edge indices.
+    f_index = cmds.getAttr(np_node+'.closestFaceIndex')
+    cmds.delete([np_node, trans_grp])
+    if f_index != -1:
+        m_int_util = om.MScriptUtil()
+        m_int_util.createFromInt(0) # Dummy face index
+        m_int_ptr = m_int_util.asIntPtr()
+        meshSurfaceIt.setIndex(f_index, m_int_ptr)
+        ei_array = om.MIntArray()
+        meshSurfaceIt.getEdges(ei_array)
+        ei_length = ei_array.length()
+        if ei_length == 4:  # quad-face
+            r_edgeIndices = ei_array[0:3:2]
+        else:               # n-gon-face
+            r_edgeIndices = [ei_array[0], ei_array[(ei_length/2)+1]]
+
+    cmds.select(clear=True)
+    return r_edgeIndices
+
+def clearConstr(args):  
+    """
+    Clears the shape constrain name field in the UI.
+    """    
+    cmds.select(clear=True)
+    cmds.text(constrTextLine, edit=True, label=' &lt; No constrain selected &gt; ')
+    cmds.text(constrTextLineType, edit=True, label=' &lt; No constrain type &gt; ')       
+
+def createConstraint(args):  
+    """
+    Main procedure.
+    """
+    constrTrans = cmds.text(constrTextLine, query=True, label=True)
+    trans_list = cmds.scrollField(selectionScrollList, query=True, text=True)
+    snapTransform = cmds.checkBox(noOffsetCheck, query=True, value=True)
+
+    sel_check = True
+
+    if constrTrans == ' &lt; No constrain selected &gt; ':
+        cmds.warning('Please select a shape to constrain to.')
+        sel_check = False
+    if trans_list == ' &lt; No transform selected &gt; ':
+        cmds.warning('Please select a transform to constrain.')
+        sel_check = False
+    if sel_check:
+        constrTrans, constrShape = constrTrans.partition('|')[0].strip(), constrTrans.partition('|')[2].strip()
+        trans_list = trans_list.split(', ')
+        if not cmds.objExists(constrTrans):
+            cmds.warning('Constraint object \"%s\" does not exist. Aborting.'%(constrTrans))
+            return
+        objShType = cmds.objectType(constrShape)
+        for item in iter(trans_list):
+            if not cmds.objExists(item):
+                cmds.warning('\"%s\" does not exist. Skipping.'%(item))
+                continue
+            if item == constrTrans:
+                cmds.warning('Cannot constrain the transform \"%s\" on its shape, \"%s\". Skipping.'%(item, constrShape))
+                continue
+            if isAttributeLockedForTransInput(item):
+                cmds.warning('One of the transform attribute is locked on \"%s\". Skipping.'%(item))
+                continue
+
+            # Create the attach/driver transform for constraining the item to the surface.
+            constr_driver = checkAndAppendExistingNames(item + '_attach')
+            cmds.group(empty=True, name=constr_driver)      
+
+            if objShType == 'mesh' or objShType == 'nurbsSurface':
+
+                if objShType == 'mesh':
+                    c_edgeIndices = returnClosestEdgePairForPolyMesh(constrShape, item)
+                    if not c_edgeIndices:
+                        cmds.error('Unknown error in mesh operation for the constraint polygon surface.') 
+                        return
+
+                    # Create the loft from the nearest obtained edge pair.
+
+                    # Edge 1 output.
+                    edgeToCurve_n_1 = checkAndAppendExistingNames('%s_e%s_curveFromMeshEdge'%(constrShape, c_edgeIndices[0]))
+                    cmds.createNode('curveFromMeshEdge', name=edgeToCurve_n_1, skipSelect=True)                             
+                    cmds.setAttr(edgeToCurve_n_1+'.isHistoricallyInteresting', 1)
+                    cmds.setAttr(edgeToCurve_n_1+'.edgeIndex[0]', c_edgeIndices[0])
+
+                    # Edge 2 output.
+                    cmds.connectAttr(constrShape+'.worldMesh[0]', edgeToCurve_n_1+'.inputMesh')
+                    edgeToCurve_n_2 = checkAndAppendExistingNames('%s_e%s_curveFromMeshEdge'%(constrShape, c_edgeIndices[1]))
+                    cmds.createNode('curveFromMeshEdge', name=edgeToCurve_n_2, skipSelect=True)                             
+                    cmds.setAttr(edgeToCurve_n_2+'.isHistoricallyInteresting', 1)
+                    cmds.setAttr(edgeToCurve_n_2+'.edgeIndex[0]', c_edgeIndices[1])
+                    cmds.connectAttr(constrShape+'.worldMesh[0]', edgeToCurve_n_2+'.inputMesh')
+
+                    # Driver loft.
+                    loft_p_edges = checkAndAppendExistingNames('%s_edge_%s_%s_loft'%(constrShape, c_edgeIndices[0], c_edgeIndices[1]))
+                    cmds.createNode('loft', name=loft_p_edges, skipSelect=True)
+                    cmds.setAttr(loft_p_edges+'.uniform', 1)
+                    cmds.setAttr(loft_p_edges+'.inputCurve', size=2)
+                    cmds.setAttr(loft_p_edges+'.reverseSurfaceNormals', 1)
+                    cmds.connectAttr(edgeToCurve_n_1+'.outputCurve', loft_p_edges+'.inputCurve[0]')
+                    cmds.connectAttr(edgeToCurve_n_2+'.outputCurve', loft_p_edges+'.inputCurve[1]')
+
+                    # Create the POS info on the loft to get the driver translation.
+                    driver_pos_info = checkAndAppendExistingNames('%s_edge_%s_%s_loft_pos_info'%(constrShape, c_edgeIndices[0], c_edgeIndices[1]))
+                    cmds.createNode('pointOnSurfaceInfo', name=driver_pos_info, skipSelect=True)
+                    cmds.setAttr(driver_pos_info+'.turnOnPercentage', 1)
+                    cmds.setAttr(driver_pos_info+'.parameterU', 0.5)
+                    cmds.setAttr(driver_pos_info+'.parameterV', 0.5)
+                    cmds.connectAttr(loft_p_edges+'.outputSurface', driver_pos_info+'.inputSurface')
+
+                    # Create the aim constraint on the loft to get the driver rotation.
+                    cmds.connectAttr(driver_pos_info+'.position', constr_driver+'.translate')
+                    surf_n_aim = cmds.createNode('aimConstraint', parent=constr_driver, name=item+'_meshSurface_normalAim')
+                    cmds.setAttr(surf_n_aim+'.aimVector', 0, 1, 0, type='double3')
+                    cmds.setAttr(surf_n_aim+'.upVector', 0, 0, 1, type='double3')
+                    cmds.connectAttr(driver_pos_info+'.normal', surf_n_aim+'.target[0].targetTranslate')
+                    cmds.connectAttr(driver_pos_info+'.tangentV', surf_n_aim+'.worldUpVector') 
+                    cmds.connectAttr(surf_n_aim+'.constraintRotate', constr_driver+'.rotate')
+
+
+                if objShType == 'nurbsSurface':
+
+                    # Create the temp CPOS to get the closest UV value on the surface for the transform.
+                    np_node = cmds.createNode('closestPointOnSurface', skipSelect=True)
+                    cmds.connectAttr(constrShape+'.worldSpace[0]', np_node+'.inputSurface')
+
+                    # Temp loc for getting the world space position for the transform to the CPOS.
+                    loc = cmds.spaceLocator()[0]
+                    cmds.delete(cmds.pointConstraint(item, loc))
+                    cmds.connectAttr(loc+'.translate', np_node+'.inPosition')
+
+                    # Get the result UV from CPOS, and normalize for the surface UV range.
+                    u_val = cmds.getAttr(np_node+'.parameterU')
+                    v_val = cmds.getAttr(np_node+'.parameterV') 
+                    cmds.disconnectAttr(loc+'.translate', np_node+'.inPosition')
+                    max_u = cmds.getAttr(constrShape+'.minMaxRangeU')[0][1]
+                    max_v = cmds.getAttr(constrShape+'.minMaxRangeV')[0][1]
+                    u_val = u_val / max_u
+                    v_val = v_val / max_v
+
+                    # Create the follicle to drive the driver/attach transform, and use the UV values.
+                    driver_pos_info = checkAndAppendExistingNames('%s_onSurface_follicle'%(constrShape))
+                    cmds.createNode('follicle', name=driver_pos_info, parent=constr_driver, skipSelect=True)
+                    cmds.setAttr(driver_pos_info+'.parameterU', u_val)
+                    cmds.setAttr(driver_pos_info+'.parameterV', v_val)          
+                    cmds.connectAttr(constrShape+'.worldSpace[0]', driver_pos_info+'.inputSurface')
+                    cmds.connectAttr(constrShape+'.worldMatrix[0]', driver_pos_info+'.inputWorldMatrix')
+                    cmds.connectAttr(driver_pos_info+'.outTranslate', constr_driver+'.translate')
+                    cmds.connectAttr(driver_pos_info+'.outRotate', constr_driver+'.rotate')
+
+                    cmds.delete(loc, np_node)
+
+
+            if objShType == 'nurbsCurve':
+
+                # Create the temp NPOC to get the closest U parameter on the curve for the transform.
+                np_node = cmds.createNode('nearestPointOnCurve', skipSelect=True)
+                cmds.connectAttr(constrShape+'.worldSpace[0]', np_node+'.inputCurve') 
+
+                # Temp loc for getting the world space position for the transform to the NPOC.
+                loc = cmds.spaceLocator()[0]
+                cmds.delete(cmds.pointConstraint(item, loc))
+                cmds.connectAttr(loc+'.translate', np_node+'.inPosition')
+
+                # Get the closest U parameter on curve.
+                u_val = cmds.getAttr(np_node+'.parameter')
+
+                # Create the POC to drive the translation for the attach/driver transform, use the U value.
+                poc_info = cmds.createNode('pointOnCurveInfo', name=item+'_pocInfo', skipSelect=True)
+                cmds.connectAttr(constrShape+'.worldSpace[0]', poc_info+'.inputCurve')
+                cmds.setAttr(poc_info+'.parameter', u_val)
+                cmds.connectAttr(poc_info+'.position', constr_driver+'.translate')
+
+                # Drive the rotation for the driver transform.
+                cmds.tangentConstraint(constrTrans, constr_driver, name=constr_driver+'_tangentConstraint')
+
+                cmds.delete(loc, np_node)
+
+            if snapTransform:
+
+                # If "Snap transform to shape" is turned on.
+                cmds.delete(cmds.geometryConstraint(constrTrans, item))
+
+            cmds.parentConstraint(constr_driver, item, maintainOffset=True)
+
+        cmds.select(clear=True) 
+    else:
+        return
+
+######## UI ########
+try:  
+    cmds.deleteUI('hb_tr_constrain_window')
+except Exception:  
+    pass
+tr_constrain_window = cmds.window('hb_tr_constrain_window', title='Constrain transform to shape'  
+                                  , widthHeight=(400,400), resizeToFitChildren=True, 
+                                    maximizeButton=False, sizeable=False)
+try:  
+    cmds.windowPref(tr_constrain_window, remove=True)
+except Exception:  
+    pass
+
+tr_constrain_column = cmds.columnLayout('hb_tr_constrain_column',  
+                                        adjustableColumn=True, 
+                                        rowSpacing=8)
+cmds.separator(style='none')
+
+
+cmds.text(label='Select transform(s) to be constrained:', font='boldLabelFont')  
+cmds.setParent(tr_constrain_column)
+
+
+cmds.rowLayout(numberOfColumns=2, columnWidth=([1, 100], [2, 100]),  
+               columnAttach=([1, 'left', 20], [2, 'right', 20]))
+cmds.button(label='Select and insert transform(s)', width=200, command=insertTransForConstr)  
+cmds.button(label='Clear', width=80, command=clearTransForConstr)  
+cmds.setParent(tr_constrain_column)  
+selectionScrollList = cmds.scrollField(text=' &lt; No transform selected &gt; ',  
+                                       font='smallPlainLabelFont', 
+                                       editable=False, height=32, 
+                                       wordWrap=True)
+
+cmds.setParent(tr_constrain_column)
+
+
+cmds.rowLayout(numberOfColumns=2, columnAttach=([1, 'left', 20], [2, 'right', 20]))  
+cmds.button(label='Select constraint', width=200, command=insertConstr)  
+cmds.button(label='Clear', width=80, command=clearConstr)  
+cmds.setParent(tr_constrain_column)  
+constrTextLine = cmds.text(label=' &lt; No constrain selected &gt; ')  
+constrTextLineType = cmds.text(label=' &lt; No constrain type &gt; ')  
+cmds.separator()
+
+cmds.rowLayout(numberOfColumns=2, columnAttach=([1, 'left', 25], [2, 'left', 20]))  
+cmds.button(label='Constrain', width=120, command=createConstraint)  
+noOffsetCheck = cmds.checkBox(label='Snap transform to shape', value=True)  
+cmds.setParent(tr_constrain_column)
+
+cmds.separator(style='none')
+
+cmds.showWindow(tr_constrain_window)  
+</code></pre>]]></description><link>http://localhost:2368/constraining-transforms-to-a-shape-in-maya-2/</link><guid isPermaLink="false">9b04b30d-78b8-458f-85dc-720feb51568b</guid><category><![CDATA[constraining]]></category><category><![CDATA[ transform ]]></category><category><![CDATA[ surface]]></category><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Thu, 30 Aug 2012 20:14:00 GMT</pubDate></item><item><title><![CDATA[Modular rigging tools for Maya]]></title><description><![CDATA[<p>This is a project that I’ve had been working on for a while now. I decided to write it after using a lot of auto-rigging tools and looking through similar solutions on the web. To avoid comparisons and to provide an idea of what this is all about, here’s a list of some observations/conclusions:</p>
+
+<ul>
+<li><p>Most of tools only deal with a specific character template, meaning that if it is based on constructing a biped rig then you have the option of modifying the placement/number of joints in a branch in the character hierarchy. For example, you’d be able to modify the number of joint in an arm or a spine, but you won’t be able to change the relationship of the parent joint (e.g, shoulder joint in an arm) with the root joint of the hierarchy (e.g, how it attaches to the spine, which attaches to the hip joint as the root).</p></li>
+<li><p>Once the character skeleton has been created, it should also be possible to go back and make changes to the original character template or a configuration which was used to define the character. If there are any modifications to character geometry in such a way that it would require altering the skeletal setup due to change in its anatomy, the tool should allow one to revert to the character template which can be modified to fit the geometry. There are cases, for instance, in morphing where only the shape of the geometry has to be modified without changing the vertex order, then one can modify the bind pose of the skeleton. </p></li>
+<li><p>One should be able to define custom skeletal modules by using the tool, so that it can be reused in the future. For example, if we are creating the skeletal structure for a hand for multiple rigs, you should be able to create and save a hand module on your own (which is a collection of joint chains for fingers connected to a wrist). Later you simply have to reload it and adjust the position and orientation of the fingers to fit the geometry.</p></li>
+<li><p>Those who are more familiar with rigging characters but need a replacement for using the current joint based system in Maya without having to worry about managing joint orientations across the character hierarchy. You could translate the child joints as needed to fit the geometry and still be able to provide custom orientation for a joint as quickly as possible (e.g, to specify if the root of a finger would rotate in a specific way).</p></li>
+<li><p>For building characters, joint “modules” could be created where a user could specify the type and number of joints in a module (beginning from one, depending on the type) and set-up relationships between such modules to quickly set-up a character hierarchy rather than from creating and parenting individual joints. A relationship between two joint modules could be constrained or hierarchical, where a constrained relationship could be toggled on or off to create “broken” hierarchies in a character.</p></li>
+<li><p>If a character geometry is not prepared at the time of building a character rig, you could prototype a character by specifying to create proxy geometry along with the joint modules. You simply have to modify the shape of the proxy geometry with reference to the character design as you see fit. Proxy geometry can also be used as an alternative to a high resolution geometry which takes longer to weight and skin to a skeleton, where at a time when an animator in a production might want to set keyframes without waiting for the final character geometry. A proxy geometry would also give a better real-time performance for viewport interaction as opposed to a high resolution geometry.</p></li>
+<li><p>An animator could also quickly rig a prototype character for use. One can load and install a character template (e.g, biped or quadruped template prepared and saved by a rigger using the tool) into a scene and apply a control rig of his/her own choice to a part of a character hierarchy (e.g, one may apply only FK controls to the right arm and IK/FK to the left arm).</p></li>
+<li><p>For extending the functionality and adding new control rigs in the future, a TD could write a control rig by simply importing/inheriting the base class for the control rig or its sub-classes in the tool and add or override functions as needed without modifying the original source code (more on that later).</p></li>
+</ul>
+
+<p>The definition of a “modular” rigging workflow is to break rig components into individual self-contained elements or modules which can be manipulated independently without affecting other modules during the process of a character set-up. Such modules can be used to define different parts of a character such as a leg, spine or an arm. Each part may behave in a certain way and will require a module type depending on its behaviour, but there may be a case where a leg for instance, can be further broken down into a foot and the main leg hierarchy (upper and lower) for which modules can be combined differently to behave like a larger module or an assembly. The way that it works is that one has to know how a control rig like a reverse foot setup on a leg will function if needed, which requires the entire leg, that is, from hip to the toe as a single hierarchy. This is not required if only an FK control rig is to be applied to the leg. With that, lets get right into using it in Maya and see how it <a href="http://animformed.github.io/modular-rigging-tools-documentation/">works</a>.</p>]]></description><link>http://localhost:2368/modular-rigging-tools-for-maya-2/</link><guid isPermaLink="false">19519e13-1300-4228-9f40-892819c5e66e</guid><category><![CDATA[modular]]></category><category><![CDATA[rigging]]></category><category><![CDATA[maya]]></category><category><![CDATA[tools]]></category><dc:creator><![CDATA[Himanish Bhattacharya]]></dc:creator><pubDate>Thu, 23 Aug 2012 21:37:00 GMT</pubDate></item></channel></rss>
