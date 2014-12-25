@@ -1,0 +1,326 @@
+<!DOCTYPE html>    
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>ANIMformed</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7ef976f40c" />    
+    <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css?v=7ef976f40c" />
+
+    <!--[if lt IE 9]>
+        <script src="/assets/js/html5shiv.js?v=7ef976f40c"></script>
+    <![endif]-->
+
+    <meta name="generator" content="Ghost 0.5" />
+<link rel="alternate" type="application/rss+xml" title="[ ANIM &gt;&gt; formed ]" href="../rss/index.html">
+<link rel="canonical" href="http://localhost:2368/extending-mrt/" />
+</head>
+<body class="post-template">
+
+    <div class="header-container">
+        <header class="site-head" style="background-image:url(../content/images/2014/10/blog_cover.jpg)">
+            <div class="header-text">
+                <h1 class="blog-title">[ ANIM &gt;&gt; formed ]</h1>
+                <span class="blog-description">cg · tech · programming · himanish bhattacharya</span>    
+            </div>
+        </header>
+        <nav class="main-nav">
+        	<ul>
+        		<li><a href="../index.html"><i class="fa fa-home"></i> Home</a></li>
+            	<li>
+        			<a href="http://animformed.github.io/tools/">Tools<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://www.creativecrash.com/maya/script/modular-rigging-tools-for-maya" target="_blank">Modular rigging tools for Maya</a></li>
+        					<li><a href="http://www.creativecrash.com/maya/script/constrain-attach-transform-to-a-shape" target="_blank">Constrain transform to shape</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">Documentation<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/modular-rigging-tools-documentation/">Modular rigging tools for Maya</a></li>
+        					<li><a href="http://animformed.github.io/constraining-transforms-to-a-shape-in-maya/">Constrain transform to shape</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">Tutorials<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/using-modular-rigging-tools-for-maya/">Modular rigging tools for Maya</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">About<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/under-construction/">LinkedIn</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Demo</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Portfolio</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Contact me</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        	</ul>
+        </nav>
+    </div>
+
+    
+
+<main class="content" role="main">
+
+    <article class="post">
+
+
+            <div class="inner">
+                <header class="post-header">
+                    <h1 class="post-title">Extending Modular rigging tools by writing custom control classes</h1>
+                    <time datetime="2013-03-25">25 Mar 2013</time>
+                    <hr>
+                </header>
+                <section class="post-content">
+                    <p>Modular rigging tools has a set of built in control rig methods that you can use for rigging joint hierarchies in a character. However, you may need a functionality to apply with a control rig method that is unavailable with existing methods. In that case, you can write a new custom control class with methods to suit your needs. To do this, examples are given here to get you started. Also, I’d prefer that you take a look at the file, <code>mrt_controlRig_src.py</code>, found under the MRT directory, which contains the source for all the built-in control classes and their definitions for Modular rigging tools. To begin, you have to get an idea about for which control type you want to extend the functionality. The built-in control rigging framework has the following class hierarchy. All built-in control classes are derived from <code>BaseJointControl</code>:</p>
+
+<table>  
+<thead>  
+<tr>  
+  <th>&lt;controlClass&gt;</th>
+  <th>List of control methods</th>
+</tr>  
+</thead>  
+<tbody>  
+<tr>  
+  <td>BaseJointControl</td>
+  <td>FK Control, FK Control Stretchy</td>
+</tr>  
+<tr>  
+  <td>JointControl</td>
+  <td>FK Control , FK Control Stretchy (both inherited from BaseJointControl)</td>
+</tr>  
+<tr>  
+  <td>SplineControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Auto Spline Control, Reverse Spine FK Control, Reverse Spine FK Control Stretchy</td>
+</tr>  
+<tr>  
+  <td>HingeControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), IK Control, IK Control Stretchy, IK Control Stretchy with Elbow Control</td>
+</tr>  
+<tr>  
+  <td>JointChainControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Dynamic FK Control, Dynamic FK Control Stretchy, Dynamic End IK Control,
+Dynamic End IK Control Stretchy</td>  
+</tr>  
+<tr>  
+  <td>CustomLegControl</td>
+  <td>FK Control, FK Control Stretchy (both inherited from BaseJointControl), Reverse IK Leg Control, Reverse IK Leg Control Stretchy</td>
+</tr>  
+</tbody>  
+</table>
+
+<p>There are two broad cases for which you may want to write your own control classes:</p>
+
+<h4 id="case1">Case 1</h4>
+
+<p>If you want to create a control class with its own control rig methods for a new type of custom hierarchy (joint hierarchy created from multiple modules using hierarchical module parenting), you should derive the class from “BaseJointControl”. For example, suppose you want to create a control class for a custom eye joint hierarchy in a character head which has the following module configuration (see below). A pair of mirrored joint modules with single nodes for the left and the right eyes (1) which are related to a base joint module (2) by hierarchical module parenting (3). The base joint module has the end node of a neck module as a constrained module parent (4).</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-1.jpg" width="500"></p>
+
+<p>After creating a character from scene modules, all the three modules used to construct the eye are now converted to a single joint hierarchy. This custom joint hierarchy has a root joint with two single child joints for both the eyes. Now, you can begin to write a new control class which would recognize this hierarchy and apply control method(s) to it. Because of how the control rigging framework for MRT is built, only the methods from this class would be identified internally for applying controls to this joint hierarchy.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-3.jpg" width="500"></p>
+
+<p>The class layout may be written as follows :</p>
+
+<pre><code class="language-python">"""  
+controlClass_customEyeControl_example.py  
+To be saved under MRT/userControlClasses/  
+All the names for source files containing user defined control classes must have the prefix "controlClass_"  
+"""  
+# Import maya commands.
+import maya.cmds as cmds  
+# Import MRT base and utility functions.
+import mrt_functions as mfunc  
+# Import functions for creating objects.
+import mrt_objects as objects
+
+# You can also import addition standard library modules as desired.
+
+class CustomEyeControl(BaseJointControl): # You MUST provide a docstring for every control class.
+
+    """This is a custom hierarchy type which is constructed from a collection of (1) a pair of mirrored joint modules with single nodes for the left and the right eyes, which are related to a base joint module with single node by hierarchical module parenting as their parent."""
+
+    customHierarchy = '&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n'
+
+    def __init__(self, characterName, rootJoint):
+        BaseJointControl.__init__(self, characterName, rootJoint
+
+    def applyFK_Control(self): # Every control method must have the prefix 'apply'.
+        '''Overrides the derived method 'applyFK_Control' from 'BaseJointControl' class. It's been modified to hold custom attributes and additional controls.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyFK_Control_Stretchy(self):
+        '''Overrides the derived method 'applyFK_Control' from 'BaseJointControl' class. It's been modified to hold custom attributes and additional controls.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyDirect_Eye_Control(self):
+        '''Creates direct translation controls for adjusting the rotation of eye joints along an aim.'''
+        &lt; The rest of the definition goes here &gt;
+</code></pre>
+
+<p>As seen above, the <code>customHierarchy</code> class attribute stores a string value which is obtained from using the utility function, <code>returnHierarchyTreeListStringForCustomControlRigging</code> from <code>mrt_functions</code> module. This function returns a string value depicting the hierarchy tree list of all joints from the root joint of the custom joint hierarchy. This value is necessary for MRT to recognize that this class has controls for a custom joint hierarchy, and is also used to check and compare whether the selected joint hierarchy can be applied with the control methods defined in this class.</p>
+
+<p>Usage for <code>returnHierarchyTreeListStringForCustomControlRigging</code>:  </p>
+
+<pre><code class="language-python">&gt;&gt;&gt; import maya.cmds as cmds
+&gt;&gt;&gt; import mrt_functions as mfunc
+&gt;&gt;&gt; print mfunc.returnHierarchyTreeListStringForCustomControlRigging('MRT_characterDef__eyebase_root_node_transform', '', False)
+&gt;&gt;&gt; '&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n\t&lt;JointNode&gt;_root_node_transform\n'
+</code></pre>
+
+<p>After the source file’s saved, re-start MRT. Now, select the eye joint hierarchy and look at the control rigging options for it. New methods will be listed as they have been defined in the source.</p>
+
+<p><em>Below</em> - Re-selecting the custom eye hierarchy shows the new control rigging options.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-4.jpg" width="500"></p>
+
+<p>The user defined method “Direct Eye Control” is displayed for the custom hierarchy and can be applied to it.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-5.jpg" width="440"></p>
+
+<p>In the script editor output, a message is printed which describes if a control class is found successfully for rigging the selected custom joint hierarchy.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-6.jpg" width="600"></p>
+
+<p>If no control class is found for the selected custom joint hierarchy, or in case of an error, the following message is printed. The ‘JointControl’ class is used here it contains the base control methods which can be applied to any joint hierarchy.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-7.jpg" width="800"></p>
+
+<hr />
+
+<h4 id="case2">Case 2</h4>
+
+<p>The next case for writing a control class would be if you want to add specific functionality to an existing control rig method or add a new method to an existing control class, you should derive the class from a child of “BaseJointControl” class (all levels of inheritance). There might be a requirement where a user defined method for built-in class “SplineControl” may have to be added, or one of its existing methods have to be overridden. The class layout is written as follows, by using the similar template as described above:</p>
+
+<pre><code class="language-python"># Continuing with the above template
+
+class SplineControlExtras(SplineControl):
+
+    """This class derives from 'SplineControl' to override existing method(s) and add new control methods(s)."""
+
+    def __init__(self, characterName, rootJoint):
+        SplineControl.__init__(self, characterName, rootJoint
+
+    def applyAuto_Spline_Control(self):
+        '''Overrides the derived method to contain updated functionality.'''
+        &lt; The rest of the definition goes here &gt;
+
+    def applyRibbon_Spline_Control(self):
+        '''Alternative implementation of an IK spine control, without using a splineIK solver. It drives the spline joint hierarchy using a joint layer which is attached to a linear NURBS surface.'''
+        &lt; The rest of the definition goes here &gt;
+</code></pre>
+
+<p>Now save the source file for the updated control definitions. Re-start MRT and select a joint hierarchy created from spline module. You’ll notice that a new control rig method “Ribbon Spline Control” is now added. The method “Auto Spline Control” gets updated as well.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-8.jpg" width="440"></p>
+
+<p>The script editor output prints a message which confirms that the user defined class “SplineControlExtras” is now being used.</p>
+
+<p><img style="float: center" src="../content/images/2014/Sep/Animformed-_-Extending-Modular-rigging-tools-by-writing-custom-control-classes-9.jpg" width="680"></p>
+
+<p>While writing user defined classes for any control types, the class definition which is the last in inheritance would be used.</p>
+
+<p>To get a list of control classes / definitions in use, click <code>Click to view available control rigs for character hierarchies</code> under the <code>Rig</code> tab for MRT.</p>
+                    <div class="inner">
+                    <!-- jQuery -->
+                    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+                    
+                    <!-- Make IE8 and below responsive by adding CSS3 MediaQuery support -->
+                    <!--[if lt IE 9]>
+                      <script type="text/javascript" src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+                    <![endif]-->
+                    
+                    <!-- Youtube and Vimeo API (improves video on touch devices and gives better HD support) -->
+                    <script type="text/javascript" src="http://www.youtube.com/iframe_api"></script>
+                    <script type="text/javascript" src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
+                    
+                    <!-- Fresco -->
+                    <script type="text/javascript" src="../assets/js/fresco.js?v=7ef976f40c"></script>
+                    <link rel="stylesheet" type="text/css" href="../assets/css/fresco/fresco.css?v=7ef976f40c" />
+                    </div>
+                </section>
+                <section class="post-share">
+                    <div class="post-share-icons">
+                        <a class="fa fa-twitter" href="https://twitter.com/share?text=Extending%20Modular%20rigging%20tools%20by%20writing%20custom%20control%20classes&amp;url=http://localhost:2368/extending-mrt/"
+                            onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                            <span class="hidden">Twitter</span>
+                        </a>
+                        <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/extending-mrt/"
+                            onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                            <span class="hidden">Facebook</span>
+                        </a>
+                        <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/extending-mrt/"
+                           onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                            <span class="hidden">Google+</span>
+                        </a>
+                    </div>
+                    <h6>Share this post:</h6>
+                </section>
+                <p class="post-tags"><i class="fa fa-tags"></i> </p>
+            </div>
+            <div class="inner">
+                <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+                    var disqus_shortname = "animformed"; // required: replace example with your forum shortname
+            
+                    /* * * DON'T EDIT BELOW THIS LINE * * */
+                    (function() {
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </div>
+    </article>
+
+</main>
+<script src="http://127.0.0.1:2368/assets/js/disqus.js?v=7ef976f40c"></script>
+
+
+    <footer class="site-footer">
+        <div class="inner">
+            <section class="copyright">
+            All content copyright <a href="http://localhost:2368/">ANIMformed</a> &copy; 2014 &bull; All rights reserved.
+            </section>
+            <section class="poweredby">
+               Base theme by <a href="http://adriannorman.me">Adrian Norman</a> &bull; Published with <a href="https://ghost.org"> Ghost</a>
+            </section>
+        </div>
+    </footer>
+
+    <script src="../public/jquery.js?v=7ef976f40c"></script>
+    
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7ef976f40c" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/prism.css?v=7ef976f40c" />
+    
+    <script type="text/javascript" src="../assets/js/index.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/prism.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=7ef976f40c"></script>
+
+</body>
+</html>

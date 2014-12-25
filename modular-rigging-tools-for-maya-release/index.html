@@ -1,0 +1,180 @@
+<!DOCTYPE html>    
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>ANIMformed</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7ef976f40c" />    
+    <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css?v=7ef976f40c" />
+
+    <!--[if lt IE 9]>
+        <script src="/assets/js/html5shiv.js?v=7ef976f40c"></script>
+    <![endif]-->
+
+    <meta name="generator" content="Ghost 0.5" />
+<link rel="alternate" type="application/rss+xml" title="[ ANIM &gt;&gt; formed ]" href="../rss/index.html">
+<link rel="canonical" href="http://localhost:2368/modular-rigging-tools-for-maya-release/" />
+</head>
+<body class="post-template">
+
+    <div class="header-container">
+        <header class="site-head" style="background-image:url(../content/images/2014/10/blog_cover.jpg)">
+            <div class="header-text">
+                <h1 class="blog-title">[ ANIM &gt;&gt; formed ]</h1>
+                <span class="blog-description">cg · tech · programming · himanish bhattacharya</span>    
+            </div>
+        </header>
+        <nav class="main-nav">
+        	<ul>
+        		<li><a href="../index.html"><i class="fa fa-home"></i> Home</a></li>
+            	<li>
+        			<a href="http://animformed.github.io/tools/">Tools<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://www.creativecrash.com/maya/script/modular-rigging-tools-for-maya" target="_blank">Modular rigging tools for Maya</a></li>
+        					<li><a href="http://www.creativecrash.com/maya/script/constrain-attach-transform-to-a-shape" target="_blank">Constrain transform to shape</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">Documentation<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/modular-rigging-tools-documentation/">Modular rigging tools for Maya</a></li>
+        					<li><a href="http://animformed.github.io/constraining-transforms-to-a-shape-in-maya/">Constrain transform to shape</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">Tutorials<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/using-modular-rigging-tools-for-maya/">Modular rigging tools for Maya</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        		<li>
+        			<a href="index.html">About<span class="caret"></span></a>
+        			<div>
+        				<ul>
+        					<li><a href="http://animformed.github.io/under-construction/">LinkedIn</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Demo</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Portfolio</a></li>
+        					<li><a href="http://animformed.github.io/under-construction/">Contact me</a></li>
+        				</ul>
+        			</div>
+        		</li>
+        	</ul>
+        </nav>
+    </div>
+
+    
+
+<main class="content" role="main">
+
+    <article class="post">
+
+
+            <div class="inner">
+                <header class="post-header">
+                    <h1 class="post-title">Modular Rigging Tools for Maya v1.0 – Public release</h1>
+                    <time datetime="2013-03-29">29 Mar 2013</time>
+                    <hr>
+                </header>
+                <section class="post-content">
+                    <p>It’s finally here. The first release of Modular Rigging Tools for Maya is available for download. When I wrote the first draft of MRT, I didn’t intend to make it public. I wrote it for personal use to rig characters using tools that worked the way I wanted without going into lot of details about getting it done out of the box using Maya. At that time, the draft version of MRT was rudimentary; it required knowing how it worked at the source level, and it also meant that it didn’t account for most of error handling which it does now. Over time, I changed and got rid of unnecessary features and added new functionality, until I realized it needed to be more organized. I re-wrote a lot of the code to keep it up with correct naming conventions, which was necessary for MRT to classify and correctly identify scene objects that it generated and handled. I also organized most of the UI elements to keep it simpler. While working my way for a public release, I had to come up with a better solution for making the control rigging framework within MRT, which was entirely re-written. This was done so that it be extended by a user if needed, without modifying the original source code. This wasn’t possible with the draft version of MRT, where you had to add /modify methods in the existing source and the control class types were entirely segregated. This was more like an ad-hoc implementation and made things a little messy.</p>
+
+<p>Anyway, I’ve tried my best to make it work as easy for everyone. It’s not perfect, and there still might be errors that I’ve overlooked; so keep them coming. If anyone’s reading this and if you’re using MRT, please comment. As always, I’ll try to improve upon and add new features to it during my time. Please view the documentation and tutorial for using Modular Rigging Tools.</p>
+
+<p>To download, see the Resources page.</p>
+                    <div class="inner">
+                    <!-- jQuery -->
+                    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+                    
+                    <!-- Make IE8 and below responsive by adding CSS3 MediaQuery support -->
+                    <!--[if lt IE 9]>
+                      <script type="text/javascript" src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+                    <![endif]-->
+                    
+                    <!-- Youtube and Vimeo API (improves video on touch devices and gives better HD support) -->
+                    <script type="text/javascript" src="http://www.youtube.com/iframe_api"></script>
+                    <script type="text/javascript" src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
+                    
+                    <!-- Fresco -->
+                    <script type="text/javascript" src="../assets/js/fresco.js?v=7ef976f40c"></script>
+                    <link rel="stylesheet" type="text/css" href="../assets/css/fresco/fresco.css?v=7ef976f40c" />
+                    </div>
+                </section>
+                <section class="post-share">
+                    <div class="post-share-icons">
+                        <a class="fa fa-twitter" href="https://twitter.com/share?text=Modular%20Rigging%20Tools%20for%20Maya%20v1.0%20%E2%80%93%20Public%20release&amp;url=http://localhost:2368/modular-rigging-tools-for-maya-release/"
+                            onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                            <span class="hidden">Twitter</span>
+                        </a>
+                        <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/modular-rigging-tools-for-maya-release/"
+                            onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                            <span class="hidden">Facebook</span>
+                        </a>
+                        <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/modular-rigging-tools-for-maya-release/"
+                           onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                            <span class="hidden">Google+</span>
+                        </a>
+                    </div>
+                    <h6>Share this post:</h6>
+                </section>
+                <p class="post-tags"><i class="fa fa-tags"></i> </p>
+            </div>
+            <div class="inner">
+                <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+                    var disqus_shortname = "animformed"; // required: replace example with your forum shortname
+            
+                    /* * * DON'T EDIT BELOW THIS LINE * * */
+                    (function() {
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </div>
+    </article>
+
+</main>
+<script src="http://127.0.0.1:2368/assets/js/disqus.js?v=7ef976f40c"></script>
+
+
+    <footer class="site-footer">
+        <div class="inner">
+            <section class="copyright">
+            All content copyright <a href="http://localhost:2368/">ANIMformed</a> &copy; 2014 &bull; All rights reserved.
+            </section>
+            <section class="poweredby">
+               Base theme by <a href="http://adriannorman.me">Adrian Norman</a> &bull; Published with <a href="https://ghost.org"> Ghost</a>
+            </section>
+        </div>
+    </footer>
+
+    <script src="../public/jquery.js?v=7ef976f40c"></script>
+    
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7ef976f40c" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/prism.css?v=7ef976f40c" />
+    
+    <script type="text/javascript" src="../assets/js/index.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/prism.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=7ef976f40c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=7ef976f40c"></script>
+
+</body>
+</html>
