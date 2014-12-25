@@ -12,16 +12,16 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
     <link href='http://fonts.googleapis.com/css?family=Lato:300,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=8385afbfb6" />    
-    <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css?v=8385afbfb6" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=aae8f53ce7" />    
+    <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css?v=aae8f53ce7" />
 
     <!--[if lt IE 9]>
-        <script src="/assets/js/html5shiv.js?v=8385afbfb6"></script>
+        <script src="/assets/js/html5shiv.js?v=aae8f53ce7"></script>
     <![endif]-->
 
     <meta name="generator" content="Ghost 0.5" />
 <link rel="alternate" type="application/rss+xml" title="[ ANIM &gt;&gt; formed ]" href="../rss/index.html">
-<link rel="canonical" href="http://localhost:2368/modular-rigging-tools-now-open-source/" />
+<link rel="canonical" href="http://localhost:2368/tools/" />
 </head>
 <body class="post-template">
 
@@ -85,20 +85,28 @@
 
             <div class="inner">
                 <header class="post-header">
-                    <h1 class="post-title">Modular rigging tools now open source</h1>
-                    <time datetime="2014-10-05">05 Oct 2014</time>
+                    <h1 class="post-title">Tools</h1>
+                    <time datetime="2014-09-19">19 Sep 2014</time>
                     <hr>
                 </header>
                 <section class="post-content">
-                    <p>After a year of releasing the first version of MRT, I've made its full source available for everyone to use. I've been able to find some time aside from my work to make updates to it and prepare it for this purpose. I got a lot of emails from users wanting to take a look at the source code since they felt it was very similar to 3D Buzz's Blueprint modular rigging system. I actually watched the series from their website before releasing MRT, and when you see the source code, you'll notice that it works in an entirely different fashion. One of the major differences is that instead of writing individual blueprint modules in code to extend the modules available for use, you make a macro module as <em>module collections</em> in maya with hierarchical module parenting from the three base module types and save them for re-use. Also, if you have lots of (tons of) modules in the scene created by MRT, they're significantly faster to work with and navigate than the modules created with 3D Buzz's blueprint UI.</p>
+                    <h3 id="maya">MAYA</h3>
 
-<p>Also, now that I've been using it for a while, there are lot of places for improvement. In my opinion, the system for naming of nodes/components can be improved and additional attributes for a control rig application can be implemented. For example, when applying an <em>Auto Spline Control</em>, it can specify the amount of mid controls in the UI.</p>
+<p><strong>Modular Rigging Tools for Maya</strong> -  v1.2  -  Now <em>fully open source</em> and updated, it's an approach to a non-destructive, modular rigging workflow that allows you to set-up any type of character. You can create bipeds, quadrupeds, or any arbitrary type, mechanical rigs and so on. You can save and re-use any type of rig and skeletal configuration for a character. You can also apply multiple control rigs to a joint hierarchy in a character. For example, a joint hierarchy for a spine can be applied with IK/FK controls and reverse spine FK controls at the same time. In addition to built-in control rigs that can be applied for Modular Rigging Tools, a TD can also write a new or extend control type for a joint hierarchy using a python template.</p>
 
-<p>Feel free to improve it on your own and modify it any way you like.</p>
+<p><div align="center"><a href="http://www.creativecrash.com/maya/script/modular-rigging-tools-for-maya" target="blank"><strong>DOWNLOAD FROM CREATIVECRASH</strong></a></div></br></p>
 
-<p><a href="http://www.creativecrash.com/maya/script/modular-rigging-tools-for-maya" target="blank"><strong>Download it now from creativecrash</strong></a></p>
+<p>To view online documentation for installing and all the features for Modular Rigging Tools for Maya, visit <a title="Modular Rigging Tools – Documentation" href="http://animformed.ghoster.io/modular-rigging-tools-documentation/" target="_blank">here</a></p>
 
-<p>Cheers (:</p>
+<p>To view tutorials for using Modular Rigging Tools for Maya, visit <a title="Using Modular rigging tools for Maya" href="http://animformed.ghoster.io/using-modular-rigging-tools-for-maya/" target="_blank">here</a></p>
+
+<p>To view documentation for extending Modular Rigging Tools for Maya, visit <a title="Extending Modular rigging tools by writing custom control classes" href="http://animformed.ghoster.io/extending-modular-rigging-tools-by-writing-custom-control-classes/" target="_blank">here</a></p>
+
+<hr />
+
+<p><strong>Constrain transform to shape</strong> -  v1.1 - A script which allows you to constrain multiple transforms to a shape node, such as, on a polygon mesh, a NURBS surface or a curve. You can maintain the current position(s) of the transform(s), or you can snap them to the shape. Any deformation on the shape node will drive the transform(s) as well. For more details, see <a title="Constraining transforms to a shape in Maya" href="http://animformed.ghoster.io/constraining-transforms-to-a-shape-in-maya/" target="_blank">here</a></p>
+
+<p><div align="center"><a href="http://www.creativecrash.com/maya/script/constrain-attach-transform-to-a-shape" target="blank"><strong>DOWNLOAD FROM CREATIVECRASH</strong></a></div></br></p>
                     <div class="inner">
                     <!-- jQuery -->
                     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -113,21 +121,21 @@
                     <script type="text/javascript" src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
                     
                     <!-- Fresco -->
-                    <script type="text/javascript" src="../assets/js/fresco.js?v=8385afbfb6"></script>
-                    <link rel="stylesheet" type="text/css" href="../assets/css/fresco/fresco.css?v=8385afbfb6" />
+                    <script type="text/javascript" src="../assets/js/fresco.js?v=aae8f53ce7"></script>
+                    <link rel="stylesheet" type="text/css" href="../assets/css/fresco/fresco.css?v=aae8f53ce7" />
                     </div>
                 </section>
                 <section class="post-share">
                     <div class="post-share-icons">
-                        <a class="fa fa-twitter" href="https://twitter.com/share?text=Modular%20rigging%20tools%20now%20open%20source&amp;url=http://localhost:2368/modular-rigging-tools-now-open-source/"
+                        <a class="fa fa-twitter" href="https://twitter.com/share?text=Tools&amp;url=http://localhost:2368/tools/"
                             onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                             <span class="hidden">Twitter</span>
                         </a>
-                        <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/modular-rigging-tools-now-open-source/"
+                        <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/tools/"
                             onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                             <span class="hidden">Facebook</span>
                         </a>
-                        <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/modular-rigging-tools-now-open-source/"
+                        <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/tools/"
                            onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                             <span class="hidden">Google+</span>
                         </a>
@@ -155,7 +163,7 @@
     </article>
 
 </main>
-<script src="http://127.0.0.1:2368/assets/js/disqus.js?v=8385afbfb6"></script>
+<script src="http://127.0.0.1:2368/assets/js/disqus.js?v=aae8f53ce7"></script>
 
 
     <footer class="site-footer">
@@ -169,16 +177,16 @@
         </div>
     </footer>
 
-    <script src="../public/jquery.js?v=8385afbfb6"></script>
+    <script src="../public/jquery.js?v=aae8f53ce7"></script>
     
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=8385afbfb6" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=aae8f53ce7" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Open+Sans:700,400" />
-    <link rel="stylesheet" type="text/css" href="../assets/css/prism.css?v=8385afbfb6" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/prism.css?v=aae8f53ce7" />
     
-    <script type="text/javascript" src="../assets/js/index.js?v=8385afbfb6"></script>
-    <script type="text/javascript" src="../assets/js/prism.js?v=8385afbfb6"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=8385afbfb6"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=8385afbfb6"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=aae8f53ce7"></script>
+    <script type="text/javascript" src="../assets/js/prism.js?v=aae8f53ce7"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=aae8f53ce7"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=aae8f53ce7"></script>
 
 </body>
 </html>
